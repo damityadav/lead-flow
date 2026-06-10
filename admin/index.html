@@ -57,6 +57,7 @@
       </button>
       <button data-nav="leads" class="nav-item w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/10">📥 Leads</button>
       <button data-nav="settings" class="nav-item w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/10">⚙️ Settings</button>
+      <button data-nav="help" class="nav-item w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/10">❓ Help &amp; Setup</button>
     </nav>
     <div class="px-3 py-3 border-t border-white/10 text-xs flex items-center justify-between">
       <span id="me-name" class="truncate">—</span>
@@ -295,6 +296,113 @@
           <input id="pw-next" type="password" placeholder="New (4+ chars)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
           <button id="pw-save" class="border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50">Change</button>
         </div>
+      </div>
+    </section>
+
+    <!-- HELP -->
+    <section data-pane="help" class="pane hidden p-6 max-w-3xl">
+      <h1 class="text-2xl font-extrabold mb-1">❓ Help &amp; First-Time Setup</h1>
+      <p class="text-sm text-gray-500 mb-6">Follow these steps in order. Most of it is one-time setup. You can copy the values straight into <b>Settings</b>.</p>
+
+      <div class="space-y-5 text-sm leading-relaxed">
+
+        <!-- 0 -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h2 class="font-bold text-base mb-2">0 · Secure your account</h2>
+          <ul class="list-disc pl-5 space-y-1 text-gray-700">
+            <li>Default login is <code class="bg-gray-100 px-1 rounded">admin</code> / <code class="bg-gray-100 px-1 rounded">admin123</code>. Set a strong password before going live — use the <code class="bg-gray-100 px-1 rounded">ADMIN_PASSWORD</code> env var on first run, or change it later via the change-password API.</li>
+            <li>This panel has one job: manage WhatsApp chats, contacts, broadcasts and leads. Everything is stored on <b>your own server</b> — no third-party SaaS.</li>
+          </ul>
+        </div>
+
+        <!-- 1 -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h2 class="font-bold text-base mb-2">1 · Create a Meta (Facebook) app</h2>
+          <ol class="list-decimal pl-5 space-y-1 text-gray-700">
+            <li>Go to <a class="text-blue-600 underline" href="https://developers.facebook.com/apps" target="_blank" rel="noopener">developers.facebook.com/apps</a> and click <b>Create App</b>.</li>
+            <li>Choose <b>Business</b> as the type. Give it any name.</li>
+            <li>In the app dashboard, add the <b>WhatsApp</b> product (for chat) and keep <b>Facebook Login</b> available (for Lead Ads).</li>
+            <li>Note your <b>App ID</b> and <b>App Secret</b> (under App Settings → Basic). You'll paste these in Settings.</li>
+          </ol>
+        </div>
+
+        <!-- 2 -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h2 class="font-bold text-base mb-2">2 · Connect WhatsApp (Cloud API)</h2>
+          <ol class="list-decimal pl-5 space-y-1 text-gray-700">
+            <li>In your Meta app → <b>WhatsApp → API Setup</b>.</li>
+            <li>Copy the <b>Phone Number ID</b> (not the phone number itself) → paste in Settings.</li>
+            <li>Generate a <b>permanent Access Token</b>: create a System User in Business Settings, give it the WhatsApp permissions, and generate a token that never expires. Paste it in Settings as the <b>Access Token</b>. <span class="text-amber-700">(The temporary 24-hour token also works for testing.)</span></li>
+            <li>Pick any secret word as your <b>Verify Token</b> (e.g. <code class="bg-gray-100 px-1 rounded">myverify123</code>) and paste the same value in Settings.</li>
+            <li>In <b>WhatsApp → Configuration → Webhook</b>, set:
+              <ul class="list-disc pl-5 mt-1">
+                <li><b>Callback URL:</b> <code class="bg-gray-100 px-1 rounded break-all" id="help-webhook"></code></li>
+                <li><b>Verify Token:</b> the same word from step 4</li>
+              </ul>
+              Then click <b>Verify and Save</b>, and under webhook fields <b>Subscribe</b> to <code class="bg-gray-100 px-1 rounded">messages</code>.</li>
+            <li>Save Settings. The Dashboard should now show <b>● Connected</b>.</li>
+          </ol>
+          <p class="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2">The webhook needs a public HTTPS URL. On localhost, use a tunnel like <a class="underline" href="https://ngrok.com" target="_blank" rel="noopener">ngrok</a> and use that https address as the callback URL. On a live server, use your domain.</p>
+        </div>
+
+        <!-- 3 -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h2 class="font-bold text-base mb-2">3 · Turn on the AI assistant (optional, free)</h2>
+          <ol class="list-decimal pl-5 space-y-1 text-gray-700">
+            <li>Get a free API key from <a class="text-blue-600 underline" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio (Gemini)</a> or <a class="text-blue-600 underline" href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq</a>. Paste it in Settings → AI assistant.</li>
+            <li>In the <b>Business info / FAQ</b> box, paste everything the AI should know: what you sell, prices, timings, policies, common questions. The AI answers <b>only</b> from this.</li>
+            <li>Keep <b>AI enabled</b> and <b>AI auto-reply ON</b> checked. Now every WhatsApp message gets an instant reply, even at night.</li>
+            <li>In any chat, tick <b>AI paused</b> to take over manually for that one person.</li>
+            <li>No key? It still works with a built-in basic auto-reply — just less smart.</li>
+          </ol>
+        </div>
+
+        <!-- 4 -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h2 class="font-bold text-base mb-2">4 · Connect Meta Lead Ads (auto-import leads)</h2>
+          <ol class="list-decimal pl-5 space-y-1 text-gray-700">
+            <li>Make sure <b>App ID</b> and <b>App Secret</b> are saved in Settings (from step 1).</li>
+            <li>In your Meta app → Facebook Login → Settings, add this as a <b>Valid OAuth Redirect URI</b>: <code class="bg-gray-100 px-1 rounded break-all" id="help-fb-redirect"></code></li>
+            <li>Go to <b>WhatsApp → Contacts</b> tab here and click <b>Connect Facebook</b>. Approve your Pages.</li>
+            <li>Done. New lead-form submissions auto-import as contacts (tagged by campaign), and the app also re-checks every 5 minutes.</li>
+            <li>To pull <b>old</b> leads once, open <code class="bg-gray-100 px-1 rounded break-all" id="help-import"></code> in the browser while logged in.</li>
+          </ol>
+        </div>
+
+        <!-- 5 -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h2 class="font-bold text-base mb-2">5 · Sending messages</h2>
+          <ul class="list-disc pl-5 space-y-1 text-gray-700">
+            <li><b>Replies in a chat</b> are free within 24 hours of the customer's last message. The green/amber banner shows the window.</li>
+            <li><b>Broadcasts &amp; sequences</b> need an <b>approved template</b>. Create templates in <a class="text-blue-600 underline" href="https://business.facebook.com/wa/manage/message-templates/" target="_blank" rel="noopener">Meta Business Manager</a> → they appear in the <b>Templates</b> tab once approved.</li>
+            <li><b>Broadcast:</b> pick an audience (paste numbers / all / by tag), enter the template name, send. Optional schedule for later.</li>
+            <li><b>Sequences:</b> set up a drip of template messages auto-sent over days; auto-enroll anyone with a chosen tag.</li>
+            <li>Marketing template messages are billed by Meta on your own account (~₹0.8 each in India). Set your rate in Settings to track spend.</li>
+          </ul>
+        </div>
+
+        <!-- 6 -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h2 class="font-bold text-base mb-2">6 · Capturing website leads (optional)</h2>
+          <p class="text-gray-700 mb-2">Point any website contact form at this endpoint to collect leads here too:</p>
+          <pre class="bg-gray-900 text-gray-100 rounded-lg p-3 text-xs overflow-x-auto">POST <span id="help-leads-ep"></span>
+Content-Type: application/json
+
+{ "source": "website", "name": "...", "phone": "...", "email": "...", "message": "..." }</pre>
+        </div>
+
+        <!-- 7 -->
+        <div class="bg-white border border-gray-200 rounded-xl p-5">
+          <h2 class="font-bold text-base mb-2">7 · Daily use</h2>
+          <ul class="list-disc pl-5 space-y-1 text-gray-700">
+            <li><b>WhatsApp → Chats:</b> live inbox. A sound + badge alerts you to new messages from any tab.</li>
+            <li><b>WhatsApp → Contacts:</b> your audience, with tags. Import/export CSV.</li>
+            <li><b>Leads:</b> every enquiry (website, Meta, WhatsApp) in one list. Export to CSV anytime.</li>
+            <li><b>Analytics:</b> delivery/read rates and per-campaign performance.</li>
+          </ul>
+        </div>
+
+        <p class="text-xs text-gray-400">Stuck on WhatsApp/Meta steps? Meta's own guide: <a class="underline" href="https://developers.facebook.com/docs/whatsapp/cloud-api/get-started" target="_blank" rel="noopener">Cloud API — Get Started</a>.</p>
       </div>
     </section>
 

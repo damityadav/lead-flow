@@ -37,6 +37,15 @@ function nav(name){
   if(name==='whatsapp') loadWhatsApp();
   if(name==='leads') loadLeads();
   if(name==='settings') loadSettings();
+  if(name==='help') loadHelp();
+}
+function loadHelp(){
+  const o=location.origin;
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
+  set('help-webhook', o+'/api/whatsapp/webhook');
+  set('help-fb-redirect', o+'/api/admin/fb/callback');
+  set('help-import', o+'/api/admin/fb/import-existing');
+  set('help-leads-ep', o+'/api/leads');
 }
 $$('.nav-item').forEach(b=>b.addEventListener('click',()=>nav(b.dataset.nav)));
 
