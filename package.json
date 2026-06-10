@@ -1,0 +1,33 @@
+{
+  "name": "leadflow",
+  "version": "1.0.0",
+  "description": "Self-hosted WhatsApp + Meta Lead Ads CRM with AI auto-replies, broadcasts, templates and drip sequences. No monthly SaaS fees, your data stays on your own server.",
+  "main": "server.js",
+  "scripts": {
+    "start": "node --experimental-sqlite server.js",
+    "dev": "node --experimental-sqlite server.js"
+  },
+  "engines": {
+    "node": ">=22.5.0"
+  },
+  "keywords": [
+    "whatsapp",
+    "whatsapp-cloud-api",
+    "meta-lead-ads",
+    "crm",
+    "lead-management",
+    "chatbot",
+    "ai",
+    "broadcast",
+    "self-hosted"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "express": "^4.21.1",
+    "express-session": "^1.18.1",
+    "multer": "^2.1.1",
+    "nodemailer": "^8.0.7",
+    "sharp": "^0.34.5"
+  }
+}
