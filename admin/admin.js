@@ -56,7 +56,6 @@ function loadHelp(){
   const o=location.origin;
   const set=(id,v)=>{const el=document.getElementById(id);if(el)el.textContent=v;};
   set('help-webhook', o+'/api/whatsapp/webhook');
-  set('help-fb-redirect', o+'/api/admin/fb/callback');
   set('help-import', o+'/api/admin/fb/import-existing');
   set('help-leads-ep', o+'/api/leads');
 }
@@ -90,17 +89,9 @@ async function loadDashboard(){
 // ═══════════ WHATSAPP ═══════════
 const wa = { active:null, convos:[], lastMsgN:0, pollTimer:null, sub:'chats' };
 async function loadWhatsApp(){
-  // Section lock removed — go straight in (admin login is the only gate).
-  $('#wa-gate').classList.add('hidden'); $('#wa-app').classList.remove('hidden');
   try{ const st=await api('/api/admin/whatsapp/status'); $('#wa-status-pill').innerHTML = st.configured?(st.botEnabled?'<span class="text-emerald-600 font-semibold">● Connected · AI on</span>':'<span class="text-amber-600 font-semibold">● Connected · AI off</span>'):'<span class="text-gray-400">● Not connected</span>'; }catch{}
   loadSpend(); waShowSub(wa.sub||'chats');
 }
-$('#wa-unlock-btn').addEventListener('click', async()=>{
-  try{ await api('/api/admin/whatsapp/unlock',{method:'POST',body:JSON.stringify({password:$('#wa-pw').value})}); $('#wa-pw').value=''; loadWhatsApp(); }
-  catch(e){ toast(e.message,true); }
-});
-$('#wa-pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('#wa-unlock-btn').click();});
-$('#wa-lock-btn').addEventListener('click', async()=>{ await api('/api/admin/whatsapp/lock',{method:'POST'}); stopPoll(); loadWhatsApp(); });
 $('#wa-refresh').addEventListener('click', loadWhatsApp);
 
 $$('[data-wa]').forEach(b=>b.addEventListener('click',()=>waShowSub(b.dataset.wa)));
@@ -187,9 +178,9 @@ $('#wa-thread-label').addEventListener('change',e=>{ if(!wa.active)return; api('
 // ── Contacts ──
 async function loadFbStatus(){
   try{ const d=await api('/api/admin/fb/status'); const box=$('#fb-status');
-    if(d.count){ box.innerHTML=`<span style="color:#1877F2;font-weight:700">📘 Meta Lead Ads</span><span class="text-emerald-600">Connected — ${d.count} page(s). Campaign leads auto-import, tagged by campaign.</span><a href="/api/admin/fb/connect" class="ml-auto text-xs border border-gray-300 rounded-lg px-3 py-1.5">Reconnect</a><button onclick="fbDisconnect()" class="text-xs border border-gray-300 rounded-lg px-3 py-1.5">Disconnect</button>`; }
-    else if(d.configured){ box.innerHTML=`<span style="color:#1877F2;font-weight:700">📘 Meta Lead Ads</span><span class="text-gray-500">Not connected yet.</span><a href="/api/admin/fb/connect" class="ml-auto text-white text-xs rounded-lg px-3 py-1.5" style="background:#1877F2">Connect Facebook</a>`; }
-    else box.innerHTML=`<span style="color:#1877F2;font-weight:700">📘 Meta Lead Ads</span><span class="text-gray-500">Add your Meta App ID &amp; Secret in Settings to connect.</span>`;
+    if(d.count){ box.innerHTML=`<span style="color:#1877F2;font-weight:700">📘 Meta Lead Ads</span><span class="text-emerald-600">Connected — ${d.count} page(s). Campaign leads auto-import, tagged by campaign.</span><a href="/api/admin/wa/connect" class="ml-auto text-xs border border-gray-300 rounded-lg px-3 py-1.5">Reconnect</a><button onclick="fbDisconnect()" class="text-xs border border-gray-300 rounded-lg px-3 py-1.5">Disconnect</button>`; }
+    else if(d.configured){ box.innerHTML=`<span style="color:#1877F2;font-weight:700">📘 Meta Lead Ads</span><span class="text-gray-500">Not connected yet.</span><a href="/api/admin/wa/connect" class="ml-auto text-white text-xs rounded-lg px-3 py-1.5" style="background:#1877F2">Connect Facebook</a>`; }
+    else box.innerHTML=`<span style="color:#1877F2;font-weight:700">📘 Meta Lead Ads</span><span class="text-gray-500">Run the ⚡ Guided setup in Settings → WhatsApp Cloud API to connect.</span>`;
   }catch{ $('#fb-status').innerHTML=''; }
 }
 window.fbDisconnect=async()=>{ if(!confirm('Disconnect all Facebook pages?'))return; await api('/api/admin/fb/disconnect',{method:'POST'}); loadFbStatus(); };
@@ -250,13 +241,7 @@ async function loadAnalytics(){
 }
 
 // ═══════════ LEADS ═══════════
-async function loadLeads(){
-  // Section lock removed — go straight in (admin login is the only gate).
-  $('#leads-gate').classList.add('hidden'); $('#leads-app').classList.remove('hidden'); loadLeadsList();
-}
-$('#leads-unlock-btn').addEventListener('click',async()=>{ try{ await api('/api/admin/leads/unlock',{method:'POST',body:JSON.stringify({password:$('#leads-pw').value})}); $('#leads-pw').value=''; loadLeads(); }catch(e){toast(e.message,true);} });
-$('#leads-pw').addEventListener('keydown',e=>{if(e.key==='Enter')$('#leads-unlock-btn').click();});
-$('#leads-lock').addEventListener('click',async()=>{ await api('/api/admin/leads/lock',{method:'POST'}); loadLeads(); });
+async function loadLeads(){ loadLeadsList(); }
 $('#leads-source').addEventListener('change',loadLeadsList);
 $('#leads-markall').addEventListener('click',async()=>{ await api('/api/admin/leads/mark-all-read',{method:'POST'}); loadLeadsList(); });
 $('#leads-export').addEventListener('click',()=>{ const s=$('#leads-source').value; window.open('/api/admin/leads/export'+(s?'?source='+s:''),'_blank'); });
@@ -279,7 +264,7 @@ async function loadSettings(){
       if(el.type==='checkbox'){ el.checked = s[el.name]!=='0'; } // default ON unless explicitly '0'
       else if(el.type==='password'){ el.value=''; }
       else if(s[el.name]!=null){ el.value=s[el.name]; } }
-    $('#wa-tok-set').textContent=s.whatsapp_token_set?'✓ saved':''; $('#wa-sec-set').textContent=s.whatsapp_app_secret_set?'✓ saved':'';
+    $('#wa-tok-set').textContent=s.whatsapp_token_set?'✓ saved':'';
     $('#wiz-app-id').value=s.whatsapp_app_id||''; $('#wiz-config-id').value=s.fb_config_id||''; wizUpdateLinks();
     if(!$('#wiz-saved').textContent) $('#wiz-saved').textContent=(s.whatsapp_app_id&&s.whatsapp_app_secret_set)?'✓ App ID & Secret saved — do step 3, then Connect.':'';
     $('#k-gem').textContent=s.gemini_api_key_set?'✓ saved':''; $('#k-groq').textContent=s.groq_api_key_set?'✓ saved':''; $('#k-claude').textContent=s.anthropic_api_key_set?'✓ saved':'';
@@ -317,8 +302,3 @@ $('#wiz-config-save').addEventListener('click',async()=>{
 });
 $('#wiz-copy').addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText($('#wa-redirect-uri').textContent); toast('Redirect URI copied'); }catch{ toast('Copy failed — select it manually',true); } });
 
-$('#pw-save').addEventListener('click',async()=>{
-  const section=$('#pw-section').value;
-  try{ await api('/api/admin/'+section+'/change-password',{method:'POST',body:JSON.stringify({current:$('#pw-current').value,next:$('#pw-next').value})}); $('#pw-current').value='';$('#pw-next').value=''; toast('Password changed'); }
-  catch(e){ toast(e.message,true); }
-});

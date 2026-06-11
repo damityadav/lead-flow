@@ -180,19 +180,7 @@
 
     <!-- WHATSAPP -->
     <section data-pane="whatsapp" class="pane hidden">
-      <!-- lock gate -->
-      <div id="wa-gate" class="hidden min-h-[70vh] flex items-center justify-center p-6">
-        <div class="card w-full max-w-md p-8 text-center">
-          <div class="text-4xl mb-2">🔒</div>
-          <h2 class="text-xl font-bold mb-1">WhatsApp is locked</h2>
-          <p class="text-sm text-gray-500 mb-4">Enter the WhatsApp password to view chats, contacts &amp; campaigns.</p>
-          <input id="wa-pw" type="password" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 mb-3" placeholder="WhatsApp password">
-          <button id="wa-unlock-btn" class="btn-primary w-full py-2.5">Unlock WhatsApp</button>
-        </div>
-      </div>
-
-      <!-- unlocked -->
-      <div id="wa-app" class="hidden">
+      <div id="wa-app">
         <div class="px-7 pt-6 pb-3 flex items-center gap-3 flex-wrap">
           <div>
             <p class="eyebrow mb-0.5">Messaging</p>
@@ -200,7 +188,6 @@
           </div>
           <span id="wa-status-pill" class="text-xs text-gray-400 mt-3">●</span>
           <button id="wa-refresh" class="btn-ghost ml-auto text-xs px-3.5 py-2">↻ Refresh</button>
-          <button id="wa-lock-btn" class="hidden btn-ghost text-xs px-3.5 py-2">🔒 Lock</button>
         </div>
         <!-- spend strip -->
         <div id="wa-spend" class="hidden mx-7 mb-4 card px-5 py-3.5 text-sm flex gap-8 flex-wrap"></div>
@@ -328,16 +315,7 @@
 
     <!-- LEADS -->
     <section data-pane="leads" class="pane hidden">
-      <div id="leads-gate" class="hidden min-h-[70vh] flex items-center justify-center p-6">
-        <div class="card w-full max-w-md p-8 text-center">
-          <div class="text-4xl mb-2">🔒</div>
-          <h2 class="text-xl font-bold mb-1">Leads are locked</h2>
-          <p class="text-sm text-gray-500 mb-4">Enter the leads password to view enquiries.</p>
-          <input id="leads-pw" type="password" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 mb-3" placeholder="Leads password">
-          <button id="leads-unlock-btn" class="btn-primary w-full py-2.5">Unlock Leads</button>
-        </div>
-      </div>
-      <div id="leads-app" class="hidden p-7">
+      <div id="leads-app" class="p-7">
         <div class="flex items-end gap-3 mb-5 flex-wrap">
           <div>
             <p class="eyebrow mb-0.5">Pipeline</p>
@@ -348,7 +326,6 @@
           </select>
           <button id="leads-export" class="btn-ghost px-3.5 py-2 text-sm">Export CSV</button>
           <button id="leads-markall" class="btn-ghost px-3.5 py-2 text-sm">Mark all read</button>
-          <button id="leads-lock" class="hidden btn-ghost px-3.5 py-2 text-sm">🔒 Lock</button>
         </div>
         <div id="leads-list" class="card overflow-x-auto"></div>
       </div>
@@ -416,17 +393,17 @@
               </div>
             </div>
           </div>
-          <p class="text-xs text-gray-400">Or fill manually — from developers.facebook.com → your app → WhatsApp. Webhook URL: <code id="webhook-url" class="bg-gray-100 px-1.5 py-0.5 rounded-md"></code></p>
-          <label class="block text-sm">Phone Number ID<input name="whatsapp_phone_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm">Access Token <span id="wa-tok-set" class="text-green-600 text-xs"></span><input name="whatsapp_token" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm">Verify Token<input name="whatsapp_verify_token" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm">WABA ID<input name="whatsapp_waba_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
           <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="whatsapp_enabled_bot" value="1" class="accent-emerald-600"> AI auto-reply ON</label>
-        </div>
-        <div class="card p-6 space-y-3">
-          <h2 class="font-bold">Meta Lead Ads</h2>
-          <label class="block text-sm">App ID<input name="whatsapp_app_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm">App Secret <span id="wa-sec-set" class="text-green-600 text-xs"></span><input name="whatsapp_app_secret" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+          <details>
+            <summary class="text-xs text-gray-400 cursor-pointer select-none hover:text-gray-600">Advanced — view / edit credentials manually (Connect fills these automatically)</summary>
+            <div class="space-y-3 mt-3">
+              <p class="text-xs text-gray-400">Webhook URL: <code id="webhook-url" class="bg-gray-100 px-1.5 py-0.5 rounded-md"></code></p>
+              <label class="block text-sm">Phone Number ID<input name="whatsapp_phone_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+              <label class="block text-sm">Access Token <span id="wa-tok-set" class="text-green-600 text-xs"></span><input name="whatsapp_token" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+              <label class="block text-sm">Verify Token<input name="whatsapp_verify_token" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+              <label class="block text-sm">WABA ID<input name="whatsapp_waba_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+            </div>
+          </details>
         </div>
         <div class="card p-6 space-y-3">
           <h2 class="font-bold">AI assistant</h2>
@@ -446,23 +423,13 @@
         <button class="btn-primary px-7 py-2.5">Save settings</button>
       </form>
 
-      <div class="card p-6 space-y-3 mt-5">
-        <h2 class="font-bold">Section passwords</h2>
-        <p class="text-xs text-gray-400">Changing requires the current password.</p>
-        <div class="flex gap-2 flex-wrap items-end">
-          <label class="text-sm">Section<select id="pw-section" class="border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1 block"><option value="whatsapp">WhatsApp</option><option value="leads">Leads</option></select></label>
-          <input id="pw-current" type="password" placeholder="Current" class="border border-gray-300 rounded-xl px-3 py-2 text-sm">
-          <input id="pw-next" type="password" placeholder="New (4+ chars)" class="border border-gray-300 rounded-xl px-3 py-2 text-sm">
-          <button id="pw-save" class="btn-ghost px-4 py-2 text-sm">Change</button>
-        </div>
-      </div>
     </section>
 
     <!-- HELP -->
     <section data-pane="help" class="pane hidden p-7 max-w-3xl">
       <p class="eyebrow mb-0.5">Guide</p>
       <h1 class="text-2xl font-extrabold tracking-tight mb-1">Help &amp; First-Time Setup</h1>
-      <p class="text-sm text-gray-500 mb-6">Follow these steps in order. Most of it is one-time setup. You can copy the values straight into <b>Settings</b>.</p>
+      <p class="text-sm text-gray-500 mb-6">One guided connect, then everything runs itself. Most steps are one-time.</p>
 
       <div class="space-y-4 text-sm leading-relaxed">
 
@@ -471,44 +438,36 @@
           <h2 class="font-bold text-base mb-2">0 · Secure your account</h2>
           <ul class="list-disc pl-5 space-y-1 text-gray-700">
             <li>Default login is <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">admin</code> / <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">admin123</code>. Set a strong password before going live — use the <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">ADMIN_PASSWORD</code> env var on first run, or change it later via the change-password API.</li>
-            <li>This panel has one job: manage WhatsApp chats, contacts, broadcasts and leads. Everything is stored on <b>your own server</b> — no third-party SaaS.</li>
+            <li>Everything is stored on <b>your own server</b> — no third-party SaaS, no monthly fee.</li>
           </ul>
         </div>
 
         <!-- 1 -->
         <div class="card p-6">
-          <h2 class="font-bold text-base mb-2">1 · Create a Meta (Facebook) app</h2>
+          <h2 class="font-bold text-base mb-2">1 · Connect WhatsApp + Meta Lead Ads (one-time, ~5 min)</h2>
+          <p class="text-gray-700 mb-2">Go to <b>Settings → WhatsApp Cloud API</b> and follow the <b>⚡ Guided setup</b> card — every step there deep-links to the exact Meta page:</p>
           <ol class="list-decimal pl-5 space-y-1 text-gray-700">
-            <li>Go to <a class="text-emerald-600 font-medium underline" href="https://developers.facebook.com/apps" target="_blank" rel="noopener">developers.facebook.com/apps</a> and click <b>Create App</b>.</li>
-            <li>Choose <b>Business</b> as the type. Give it any name.</li>
-            <li>In the app dashboard, add the <b>WhatsApp</b> product (for chat) and keep <b>Facebook Login</b> available (for Lead Ads).</li>
-            <li>Note your <b>App ID</b> and <b>App Secret</b> (under App Settings → Basic). You'll paste these in Settings.</li>
+            <li>Create a Meta app (type <b>Business</b>) and add the <b>WhatsApp</b> product to it in the app dashboard.</li>
+            <li>Paste the <b>App ID &amp; App Secret</b> into the wizard → Save.</li>
+            <li>Create a <b>Facebook Login for Business configuration</b> (User access token, tick all permissions) and paste its <b>Configuration ID</b> → Save.</li>
+            <li>Add the OAuth <b>redirect URI</b> shown in the wizard to Facebook Login → Settings.</li>
+            <li>Click <b>Connect with Facebook</b>. Done — access token, WABA ID, Phone Number ID, verify token, webhook and your lead-ads Pages are configured automatically. The Dashboard shows <b>● Connected</b>.</li>
           </ol>
+          <p class="mt-2 text-xs text-gray-600">After connecting, new Meta lead-form submissions auto-import as contacts (tagged by campaign) and are re-checked every 5 minutes. To pull <b>old</b> leads once, open <code class="bg-gray-100 px-1.5 py-0.5 rounded-md break-all" id="help-import"></code> while logged in.</p>
+          <details class="mt-3">
+            <summary class="text-xs text-gray-400 cursor-pointer select-none hover:text-gray-600">Webhook didn't auto-configure? (localhost / manual fallback)</summary>
+            <div class="mt-2 text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-xl p-3 space-y-1">
+              <p>Auto-setup needs a public HTTPS URL, so it fails on localhost — use a tunnel like <a class="underline" href="https://ngrok.com" target="_blank" rel="noopener">ngrok</a>, or set it manually in your Meta app → <b>WhatsApp → Configuration → Webhook</b>:</p>
+              <p><b>Callback URL:</b> <code class="bg-white/70 px-1.5 py-0.5 rounded-md break-all" id="help-webhook"></code></p>
+              <p><b>Verify Token:</b> in Settings → WhatsApp Cloud API → <b>Advanced</b> (auto-generated for you).</p>
+              <p>Click <b>Verify and Save</b>, then <b>Subscribe</b> to the <code class="bg-white/70 px-1.5 py-0.5 rounded-md">messages</code> field.</p>
+            </div>
+          </details>
         </div>
 
         <!-- 2 -->
         <div class="card p-6">
-          <h2 class="font-bold text-base mb-2">2 · Connect WhatsApp (Cloud API)</h2>
-          <p class="text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 rounded-xl p-2.5 mb-2">⚡ <b>Shortcut:</b> save your App ID &amp; Secret in Settings, add the OAuth redirect URI shown there, then click <b>Connect with Facebook</b> in Settings → WhatsApp Cloud API. Steps 2–5 below happen automatically. The manual way:</p>
-          <ol class="list-decimal pl-5 space-y-1 text-gray-700">
-            <li>In your Meta app → <b>WhatsApp → API Setup</b>.</li>
-            <li>Copy the <b>Phone Number ID</b> (not the phone number itself) → paste in Settings.</li>
-            <li>Generate a <b>permanent Access Token</b>: create a System User in Business Settings, give it the WhatsApp permissions, and generate a token that never expires. Paste it in Settings as the <b>Access Token</b>. <span class="text-amber-700">(The temporary 24-hour token also works for testing.)</span></li>
-            <li>Pick any secret word as your <b>Verify Token</b> (e.g. <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">myverify123</code>) and paste the same value in Settings.</li>
-            <li>In <b>WhatsApp → Configuration → Webhook</b>, set:
-              <ul class="list-disc pl-5 mt-1">
-                <li><b>Callback URL:</b> <code class="bg-gray-100 px-1.5 py-0.5 rounded-md break-all" id="help-webhook"></code></li>
-                <li><b>Verify Token:</b> the same word from step 4</li>
-              </ul>
-              Then click <b>Verify and Save</b>, and under webhook fields <b>Subscribe</b> to <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">messages</code>.</li>
-            <li>Save Settings. The Dashboard should now show <b>● Connected</b>.</li>
-          </ol>
-          <p class="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-xl p-2.5">The webhook needs a public HTTPS URL. On localhost, use a tunnel like <a class="underline" href="https://ngrok.com" target="_blank" rel="noopener">ngrok</a> and use that https address as the callback URL. On a live server, use your domain.</p>
-        </div>
-
-        <!-- 3 -->
-        <div class="card p-6">
-          <h2 class="font-bold text-base mb-2">3 · Turn on the AI assistant (optional, free)</h2>
+          <h2 class="font-bold text-base mb-2">2 · Turn on the AI assistant (optional, free)</h2>
           <ol class="list-decimal pl-5 space-y-1 text-gray-700">
             <li>Get a free API key from <a class="text-emerald-600 font-medium underline" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio (Gemini)</a> or <a class="text-emerald-600 font-medium underline" href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq</a>. Paste it in Settings → AI assistant.</li>
             <li>In the <b>Business info / FAQ</b> box, paste everything the AI should know: what you sell, prices, timings, policies, common questions. The AI answers <b>only</b> from this.</li>
@@ -518,21 +477,9 @@
           </ol>
         </div>
 
-        <!-- 4 -->
+        <!-- 3 -->
         <div class="card p-6">
-          <h2 class="font-bold text-base mb-2">4 · Connect Meta Lead Ads (auto-import leads)</h2>
-          <ol class="list-decimal pl-5 space-y-1 text-gray-700">
-            <li>Make sure <b>App ID</b> and <b>App Secret</b> are saved in Settings (from step 1).</li>
-            <li>In your Meta app → Facebook Login → Settings, add this as a <b>Valid OAuth Redirect URI</b>: <code class="bg-gray-100 px-1.5 py-0.5 rounded-md break-all" id="help-fb-redirect"></code></li>
-            <li>Go to <b>WhatsApp → Contacts</b> tab here and click <b>Connect Facebook</b>. Approve your Pages.</li>
-            <li>Done. New lead-form submissions auto-import as contacts (tagged by campaign), and the app also re-checks every 5 minutes.</li>
-            <li>To pull <b>old</b> leads once, open <code class="bg-gray-100 px-1.5 py-0.5 rounded-md break-all" id="help-import"></code> in the browser while logged in.</li>
-          </ol>
-        </div>
-
-        <!-- 5 -->
-        <div class="card p-6">
-          <h2 class="font-bold text-base mb-2">5 · Sending messages</h2>
+          <h2 class="font-bold text-base mb-2">3 · Sending messages</h2>
           <ul class="list-disc pl-5 space-y-1 text-gray-700">
             <li><b>Replies in a chat</b> are free within 24 hours of the customer's last message. The green/amber banner shows the window.</li>
             <li><b>Broadcasts &amp; sequences</b> need an <b>approved template</b>. Create templates in <a class="text-emerald-600 font-medium underline" href="https://business.facebook.com/wa/manage/message-templates/" target="_blank" rel="noopener">Meta Business Manager</a> → they appear in the <b>Templates</b> tab once approved.</li>
@@ -542,9 +489,9 @@
           </ul>
         </div>
 
-        <!-- 6 -->
+        <!-- 4 -->
         <div class="card p-6">
-          <h2 class="font-bold text-base mb-2">6 · Capturing website leads (optional)</h2>
+          <h2 class="font-bold text-base mb-2">4 · Capturing website leads (optional)</h2>
           <p class="text-gray-700 mb-2">Point any website contact form at this endpoint to collect leads here too:</p>
           <pre class="bg-gray-900 text-gray-100 rounded-xl p-4 text-xs overflow-x-auto">POST <span id="help-leads-ep"></span>
 Content-Type: application/json
@@ -552,9 +499,9 @@ Content-Type: application/json
 { "source": "website", "name": "...", "phone": "...", "email": "...", "message": "..." }</pre>
         </div>
 
-        <!-- 7 -->
+        <!-- 5 -->
         <div class="card p-6">
-          <h2 class="font-bold text-base mb-2">7 · Daily use</h2>
+          <h2 class="font-bold text-base mb-2">5 · Daily use</h2>
           <ul class="list-disc pl-5 space-y-1 text-gray-700">
             <li><b>WhatsApp → Chats:</b> live inbox. A sound + badge alerts you to new messages from any tab.</li>
             <li><b>WhatsApp → Contacts:</b> your audience, with tags. Import/export CSV.</li>
