@@ -390,6 +390,16 @@
               </div>
               <div class="flex gap-2.5 items-start">
                 <span class="wiz-n">3</span>
+                <div class="flex-1 min-w-0">Create a login <b class="text-gray-200">Configuration</b> in <a id="wiz-config-link" href="https://developers.facebook.com/apps/" target="_blank" rel="noopener" class="wiz-link">Facebook Login for Business → Configurations ↗</a> — choose <b class="text-gray-200">User access token</b>, tick all permissions you see (WhatsApp + pages + leads), save, then paste the <b class="text-gray-200">Configuration ID</b>:
+                  <div class="flex gap-2 mt-2 flex-wrap">
+                    <input id="wiz-config-id" placeholder="Configuration ID" class="wiz-in flex-1 min-w-[160px]">
+                    <button type="button" id="wiz-config-save" class="btn-primary px-4 py-1.5 text-xs">Save</button>
+                  </div>
+                  <span class="block mt-1.5 text-[11px]" style="color:#7d948a">Needed because new Business apps reject classic scopes. If your app is an older type and login already works, you can skip this.</span>
+                </div>
+              </div>
+              <div class="flex gap-2.5 items-start">
+                <span class="wiz-n">4</span>
                 <div class="min-w-0">Add this OAuth redirect URI in <a id="wiz-login-link" href="https://developers.facebook.com/apps/" target="_blank" rel="noopener" class="wiz-link">Facebook Login → Settings ↗</a>:
                   <div class="flex items-center gap-2 mt-1.5 flex-wrap">
                     <code id="wa-redirect-uri" class="bg-white/10 px-1.5 py-1 rounded-md text-gray-300 break-all"></code>
@@ -398,7 +408,7 @@
                 </div>
               </div>
               <div class="flex gap-2.5 items-start">
-                <span class="wiz-n">4</span>
+                <span class="wiz-n">5</span>
                 <div>
                   <a href="/api/admin/wa/connect" class="btn-primary inline-block px-5 py-2 text-xs">Connect with Facebook →</a>
                   <span class="block mt-1.5" style="color:#7d948a">Access token, WABA ID, Phone Number ID, verify token, webhook, lead-ads pages — all automatic from here.</span>

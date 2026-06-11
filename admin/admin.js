@@ -280,7 +280,7 @@ async function loadSettings(){
       else if(el.type==='password'){ el.value=''; }
       else if(s[el.name]!=null){ el.value=s[el.name]; } }
     $('#wa-tok-set').textContent=s.whatsapp_token_set?'✓ saved':''; $('#wa-sec-set').textContent=s.whatsapp_app_secret_set?'✓ saved':'';
-    $('#wiz-app-id').value=s.whatsapp_app_id||''; wizUpdateLinks();
+    $('#wiz-app-id').value=s.whatsapp_app_id||''; $('#wiz-config-id').value=s.fb_config_id||''; wizUpdateLinks();
     if(!$('#wiz-saved').textContent) $('#wiz-saved').textContent=(s.whatsapp_app_id&&s.whatsapp_app_secret_set)?'✓ App ID & Secret saved — do step 3, then Connect.':'';
     $('#k-gem').textContent=s.gemini_api_key_set?'✓ saved':''; $('#k-groq').textContent=s.groq_api_key_set?'✓ saved':''; $('#k-claude').textContent=s.anthropic_api_key_set?'✓ saved':'';
   }catch(e){ toast(e.message,true); }
@@ -295,9 +295,11 @@ $('#settings-form').addEventListener('submit',async e=>{
 // point inside that specific app.
 function wizUpdateLinks(){
   const id=($('#wiz-app-id').value||'').trim();
-  const base=/^\d{5,}$/.test(id)?('https://developers.facebook.com/apps/'+id):'https://developers.facebook.com/apps';
-  $('#wiz-basic-link').href=base+(/^\d{5,}$/.test(id)?'/settings/basic/':'/');
-  $('#wiz-login-link').href=base+(/^\d{5,}$/.test(id)?'/fb-login/settings/':'/');
+  const has=/^\d{5,}$/.test(id);
+  const base=has?('https://developers.facebook.com/apps/'+id):'https://developers.facebook.com/apps';
+  $('#wiz-basic-link').href=base+(has?'/settings/basic/':'/');
+  $('#wiz-login-link').href=base+(has?'/fb-login/settings/':'/');
+  $('#wiz-config-link').href=base+(has?'/business-login/configurations/':'/');
 }
 $('#wiz-app-id').addEventListener('input',wizUpdateLinks);
 $('#wiz-save').addEventListener('click',async()=>{
@@ -305,6 +307,12 @@ $('#wiz-save').addEventListener('click',async()=>{
   if(!id) return toast('App ID required',true);
   const body={whatsapp_app_id:id}; if(secret) body.whatsapp_app_secret=secret;
   try{ await api('/api/settings',{method:'PUT',body:JSON.stringify(body)}); $('#wiz-app-secret').value=''; $('#wiz-saved').textContent='✓ Saved — now do step 3, then Connect.'; toast('App credentials saved'); loadSettings(); }
+  catch(e){ toast(e.message,true); }
+});
+$('#wiz-config-save').addEventListener('click',async()=>{
+  const cfg=($('#wiz-config-id').value||'').trim();
+  if(!cfg) return toast('Configuration ID required',true);
+  try{ await api('/api/settings',{method:'PUT',body:JSON.stringify({fb_config_id:cfg})}); toast('Configuration ID saved'); }
   catch(e){ toast(e.message,true); }
 });
 $('#wiz-copy').addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText($('#wa-redirect-uri').textContent); toast('Redirect URI copied'); }catch{ toast('Copy failed — select it manually',true); } });
