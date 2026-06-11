@@ -286,8 +286,29 @@
 
         <!-- TEMPLATES -->
         <div data-wasub="templates" class="wa-sub hidden px-7 pb-7">
-          <div class="flex items-center mb-3"><h3 class="font-bold">Message templates</h3><button id="tpl-refresh" class="btn-ghost ml-auto text-xs px-3.5 py-2">↻ Refresh</button></div>
-          <div id="tpl-list" class="space-y-2"></div>
+          <div class="flex gap-4 flex-wrap">
+            <div class="flex-1 min-w-0">
+              <div class="flex items-center mb-3"><h3 class="font-bold">Message templates</h3><button id="tpl-refresh" class="btn-ghost ml-auto text-xs px-3.5 py-2">↻ Refresh</button></div>
+              <div id="tpl-list" class="space-y-2"></div>
+            </div>
+            <div class="w-80 flex-none card p-5 space-y-2.5">
+              <p class="font-bold text-sm">Create template</p>
+              <p class="text-xs text-gray-400 -mt-1">Submitted to Meta for approval (usually minutes). Use lowercase name with underscores.</p>
+              <input id="tpl-name" placeholder="Name (e.g. welcome_offer)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <div class="flex gap-2">
+                <select id="tpl-category" class="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm">
+                  <option value="MARKETING">Marketing</option>
+                  <option value="UTILITY">Utility</option>
+                </select>
+                <input id="tpl-lang" value="en_US" class="w-28 border border-gray-300 rounded-xl px-3 py-2 text-sm" placeholder="Lang">
+              </div>
+              <textarea id="tpl-body" rows="4" placeholder="Body text. Use {{1}}, {{2}} for variables — e.g. Hi {{1}}, your order {{2}} is confirmed." class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm"></textarea>
+              <input id="tpl-examples" placeholder="Sample values for {{1}},{{2}} (comma-separated)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <input id="tpl-footer" placeholder="Footer (optional)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <button id="tpl-create" class="btn-primary w-full py-2 text-sm">Submit for approval</button>
+              <div id="tpl-create-result" class="text-xs"></div>
+            </div>
+          </div>
         </div>
 
         <!-- SEQUENCES -->

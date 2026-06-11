@@ -220,6 +220,13 @@ async function loadTemplates(){
   catch(e){ $('#tpl-list').innerHTML='<p class="text-xs text-red-500">'+esc(e.message)+'</p>'; }
 }
 $('#tpl-refresh').addEventListener('click',loadTemplates);
+$('#tpl-create').addEventListener('click',async()=>{
+  const body={ name:$('#tpl-name').value.trim(), category:$('#tpl-category').value, language:$('#tpl-lang').value.trim()||'en_US', bodyText:$('#tpl-body').value.trim(), footerText:$('#tpl-footer').value.trim(), examples:$('#tpl-examples').value.split(',').map(s=>s.trim()).filter(Boolean) };
+  if(!body.name||!body.bodyText){ $('#tpl-create-result').innerHTML='<span class="text-red-500">Name and body are required.</span>'; return; }
+  $('#tpl-create-result').innerHTML='<span class="text-gray-400">Submitting…</span>';
+  try{ const r=await api('/api/admin/whatsapp/templates',{method:'POST',body:JSON.stringify(body)}); $('#tpl-create-result').innerHTML=`<span class="text-emerald-600">✓ Submitted — status: ${esc(r.status||'PENDING')}.</span>`; $('#tpl-name').value='';$('#tpl-body').value='';$('#tpl-examples').value='';$('#tpl-footer').value=''; loadTemplates(); }
+  catch(e){ $('#tpl-create-result').innerHTML='<span class="text-red-500">'+esc(e.message)+'</span>'; }
+});
 window.delTpl=async name=>{ if(!confirm('Delete template '+name+'?'))return; try{await api('/api/admin/whatsapp/templates/'+encodeURIComponent(name),{method:'DELETE'});loadTemplates();}catch(e){toast(e.message,true);} };
 
 // ── Sequences ──
