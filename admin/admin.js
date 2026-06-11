@@ -2,7 +2,7 @@
 const $ = s => document.querySelector(s);
 const $$ = s => document.querySelectorAll(s);
 function esc(s){return String(s==null?'':s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function toast(msg, err){const t=document.createElement('div');t.className='toast';if(err)t.style.background='#b91c1c';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),2600);}
+function toast(msg, err){const t=document.createElement('div');t.className='toast';if(err)t.style.background='#b91c1c';t.textContent=msg;document.body.appendChild(t);setTimeout(()=>t.remove(),Math.min(2600+msg.length*30,9000));}
 async function api(url, opts={}){
   const r = await fetch(url, { credentials:'same-origin', headers:{'Content-Type':'application/json'}, ...opts });
   const d = await r.json().catch(()=>({}));
@@ -20,7 +20,20 @@ function fmtPhone(wa){ const d=String(wa||''); if(/^91\d{10}$/.test(d)) return '
   catch{ showLogin(); }
 })();
 function showLogin(){ $('#view-login').classList.remove('hidden'); $('#view-app').classList.add('hidden'); }
-function showApp(me){ $('#view-login').classList.add('hidden'); $('#view-app').classList.remove('hidden'); $('#me-name').textContent=me.username||'admin'; nav('dashboard'); startNotifier(); }
+function showApp(me){ $('#view-login').classList.add('hidden'); $('#view-app').classList.remove('hidden'); $('#me-name').textContent=me.username||'admin'; nav('dashboard'); startNotifier(); connectResultToast(); }
+// Toast the result of an OAuth connect redirect (?waconnect=… / ?fb=…)
+function connectResultToast(){
+  const p=new URLSearchParams(location.search);
+  if(p.get('waconnect')==='ok'){
+    const manual=p.get('webhook')==='manual';
+    toast('✓ WhatsApp connected'+(p.get('phone')?' — '+p.get('phone'):'')+(manual?' · webhook auto-setup failed (needs public HTTPS) — set it manually, see Help step 2':''), false);
+    nav('settings');
+  } else if(p.get('waconnect')==='error'){ toast(p.get('msg')||'Facebook connect failed', true); nav('settings'); }
+  else if(p.get('fb')==='connected'){ toast('✓ Facebook connected — '+(p.get('pages')||0)+' page(s)'); }
+  else if(p.get('fb')==='error'){ toast(p.get('msg')||'Facebook connect failed', true); }
+  else return;
+  history.replaceState(null,'','/admin/');
+}
 
 $('#login-form').addEventListener('submit', async e=>{
   e.preventDefault(); $('#login-error').classList.add('hidden');
@@ -259,6 +272,7 @@ window.delLead=async id=>{ if(!confirm('Delete this lead?'))return; await api('/
 // ═══════════ SETTINGS ═══════════
 async function loadSettings(){
   $('#webhook-url').textContent=location.origin+'/api/whatsapp/webhook';
+  const wr=$('#wa-redirect-uri'); if(wr) wr.textContent=location.origin+'/api/admin/wa/callback';
   try{
     const s=await api('/api/settings'); const f=$('#settings-form');
     for(const el of f.elements){ if(!el.name)continue;
@@ -266,6 +280,8 @@ async function loadSettings(){
       else if(el.type==='password'){ el.value=''; }
       else if(s[el.name]!=null){ el.value=s[el.name]; } }
     $('#wa-tok-set').textContent=s.whatsapp_token_set?'✓ saved':''; $('#wa-sec-set').textContent=s.whatsapp_app_secret_set?'✓ saved':'';
+    $('#wiz-app-id').value=s.whatsapp_app_id||''; wizUpdateLinks();
+    if(!$('#wiz-saved').textContent) $('#wiz-saved').textContent=(s.whatsapp_app_id&&s.whatsapp_app_secret_set)?'✓ App ID & Secret saved — do step 3, then Connect.':'';
     $('#k-gem').textContent=s.gemini_api_key_set?'✓ saved':''; $('#k-groq').textContent=s.groq_api_key_set?'✓ saved':''; $('#k-claude').textContent=s.anthropic_api_key_set?'✓ saved':'';
   }catch(e){ toast(e.message,true); }
 }
@@ -274,6 +290,25 @@ $('#settings-form').addEventListener('submit',async e=>{
   for(const el of f.elements){ if(!el.name)continue; if(el.type==='checkbox') body[el.name]=el.checked?'1':'0'; else if(el.type==='password'){ if(el.value.trim()) body[el.name]=el.value; } else body[el.name]=el.value; }
   try{ await api('/api/settings',{method:'PUT',body:JSON.stringify(body)}); toast('Settings saved'); loadSettings(); }catch(err){toast(err.message,true);}
 });
+// ── Setup wizard (Settings → WhatsApp Cloud API) ──
+// Deep-link steps to the exact Meta pages; once an App ID is known, links
+// point inside that specific app.
+function wizUpdateLinks(){
+  const id=($('#wiz-app-id').value||'').trim();
+  const base=/^\d{5,}$/.test(id)?('https://developers.facebook.com/apps/'+id):'https://developers.facebook.com/apps';
+  $('#wiz-basic-link').href=base+(/^\d{5,}$/.test(id)?'/settings/basic/':'/');
+  $('#wiz-login-link').href=base+(/^\d{5,}$/.test(id)?'/fb-login/settings/':'/');
+}
+$('#wiz-app-id').addEventListener('input',wizUpdateLinks);
+$('#wiz-save').addEventListener('click',async()=>{
+  const id=($('#wiz-app-id').value||'').trim(), secret=($('#wiz-app-secret').value||'').trim();
+  if(!id) return toast('App ID required',true);
+  const body={whatsapp_app_id:id}; if(secret) body.whatsapp_app_secret=secret;
+  try{ await api('/api/settings',{method:'PUT',body:JSON.stringify(body)}); $('#wiz-app-secret').value=''; $('#wiz-saved').textContent='✓ Saved — now do step 3, then Connect.'; toast('App credentials saved'); loadSettings(); }
+  catch(e){ toast(e.message,true); }
+});
+$('#wiz-copy').addEventListener('click',async()=>{ try{ await navigator.clipboard.writeText($('#wa-redirect-uri').textContent); toast('Redirect URI copied'); }catch{ toast('Copy failed — select it manually',true); } });
+
 $('#pw-save').addEventListener('click',async()=>{
   const section=$('#pw-section').value;
   try{ await api('/api/admin/'+section+'/change-password',{method:'POST',body:JSON.stringify({current:$('#pw-current').value,next:$('#pw-next').value})}); $('#pw-current').value='';$('#pw-next').value=''; toast('Password changed'); }

@@ -2,6 +2,7 @@
 // Express + node:sqlite + session auth. Run with: npm start
 'use strict';
 const express = require('express');
+const crypto = require('crypto');
 const session = require('express-session');
 const bcrypt = require('bcryptjs');
 const path = require('path');
@@ -803,6 +804,55 @@ app.get('/api/admin/fb/callback', requireAdmin, async (req, res) => {
     res.redirect('/admin/?fb=connected&pages=' + pages.length + '#whatsapp');
   } catch (e) { console.error('[FB callback]', e.message); res.redirect('/admin/?fb=error&msg=' + encodeURIComponent(e.message) + '#whatsapp'); }
 });
+// ── One-click WhatsApp connect ──
+// One Facebook login pulls the WABA ID, Phone Number ID and a long-lived
+// token, auto-generates a verify token, subscribes the WABA + app webhook,
+// and connects lead-ads Pages too. User only needs App ID + Secret saved.
+app.get('/api/admin/wa/connect', requireAdmin, (req, res) => {
+  if (!fbLeads.isConfigured()) return res.status(400).send('Add your Meta App ID and App Secret in Settings first, then retry.');
+  res.redirect(fbLeads.waLoginUrl(absoluteUrl(req, '/api/admin/wa/callback'), 'waconnect'));
+});
+app.get('/api/admin/wa/callback', requireAdmin, async (req, res) => {
+  const fail = (msg) => res.redirect('/admin/?waconnect=error&msg=' + encodeURIComponent(msg) + '#settings');
+  const code = (req.query.code || '').toString();
+  if (!code) return fail((req.query.error_description || 'Facebook login was cancelled.').toString());
+  const saveSetting = (k, v) => db.prepare("INSERT INTO site_settings (key, value, updated_at) VALUES (?, ?, CURRENT_TIMESTAMP) ON CONFLICT(key) DO UPDATE SET value = excluded.value, updated_at = CURRENT_TIMESTAMP").run(k, String(v));
+  try {
+    const redirectUri = absoluteUrl(req, '/api/admin/wa/callback');
+    const userToken = await fbLeads.exchangeCode(code, redirectUri);
+    const longToken = await fbLeads.longLived(userToken);
+
+    const wabas = await fbLeads.listWabas(longToken);
+    if (!wabas.length) return fail('No WhatsApp Business Account found for this Facebook user. Open your Meta app → WhatsApp → API Setup once (it creates the WABA), then retry.');
+    const waba = wabas[0];
+    const phones = await fbLeads.listWabaPhones(waba.id, longToken);
+    if (!phones.length) return fail('Your WhatsApp Business Account has no phone numbers yet. Add one in Meta app → WhatsApp → API Setup, then retry.');
+    const phone = phones[0];
+
+    let verifyToken = ((db.prepare("SELECT value FROM site_settings WHERE key = 'whatsapp_verify_token'").get() || {}).value || '').trim();
+    if (!verifyToken) { verifyToken = crypto.randomBytes(8).toString('hex'); saveSetting('whatsapp_verify_token', verifyToken); }
+
+    saveSetting('whatsapp_token', longToken);
+    saveSetting('whatsapp_waba_id', waba.id);
+    saveSetting('whatsapp_phone_id', phone.id);
+
+    try { await fbLeads.subscribeWaba(waba.id, longToken); } catch (e) { console.error('[WA CONNECT] WABA subscribe:', e.message); }
+    let webhookOk = false;
+    try { await fbLeads.setAppWebhook(absoluteUrl(req, '/api/whatsapp/webhook'), verifyToken); webhookOk = true; }
+    catch (e) { console.error('[WA CONNECT] webhook auto-config:', e.message); }
+
+    let pageCount = 0;
+    try {
+      const pages = await fbLeads.listPages(longToken);
+      for (const p of pages) { try { await fbLeads.subscribePage(p.id, p.access_token); p._subscribed = true; } catch (_) { p._subscribed = false; } }
+      fbLeads.savePages(pages); pageCount = pages.length;
+    } catch (e) { console.error('[WA CONNECT] pages:', e.message); }
+
+    console.log(`✓ One-click connect: WABA ${waba.id}, phone ${phone.display_phone_number || phone.id}, webhook ${webhookOk ? 'auto' : 'manual'}, ${pageCount} page(s)`);
+    res.redirect('/admin/?waconnect=ok&phone=' + encodeURIComponent(phone.display_phone_number || '') + '&pages=' + pageCount + '&webhook=' + (webhookOk ? 'ok' : 'manual') + '#settings');
+  } catch (e) { console.error('[WA CONNECT]', e.message); return fail(e.message); }
+});
+
 app.get('/api/admin/fb/status', requireAdmin, (req, res) => { try { const pages = fbLeads.connectedPages(); res.json({ configured: fbLeads.isConfigured(), count: pages.length, pages }); } catch (e) { res.status(500).json({ error: e.message }); } });
 app.post('/api/admin/fb/disconnect', requireAdmin, (req, res) => { try { fbLeads.disconnectAll(); res.json({ ok: true }); } catch (e) { res.status(500).json({ error: e.message }); } });
 app.get('/api/admin/fb/debug', requireAdmin, async (req, res) => {

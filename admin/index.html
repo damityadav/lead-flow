@@ -89,6 +89,13 @@
   #wa-messages{background-color:#f3f6f3;background-image:radial-gradient(#dfe8e1 1px,transparent 1px);background-size:20px 20px}
   .badge{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 6px;border-radius:10px;background:linear-gradient(135deg,#16a34a,#25D366);color:#fff;font-size:10px;font-weight:800;box-shadow:0 3px 8px -2px rgba(22,163,74,.5)}
 
+  /* ── setup wizard ── */
+  .wiz-n{width:20px;height:20px;border-radius:99px;background:rgba(37,211,102,.16);color:#34e07a;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:10px;flex:none;box-shadow:inset 0 0 0 1px rgba(37,211,102,.3);margin-top:1px}
+  .wiz-link{color:#34e07a;text-decoration:underline;font-weight:600}
+  .wiz-in{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:10px;padding:7px 10px;font-size:12px}
+  .wiz-in::placeholder{color:rgba(255,255,255,.35)}
+  .wiz-in:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(37,211,102,.18)}
+
   /* ── toast ── */
   .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(12,31,21,.92);backdrop-filter:blur(12px);color:#fff;padding:11px 20px;border-radius:14px;font-size:13px;font-weight:500;z-index:100;box-shadow:0 16px 40px -12px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.08);animation:toastIn .25s ease}
   @keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
@@ -361,7 +368,45 @@
         </div>
         <div class="card p-6 space-y-3">
           <h2 class="font-bold">WhatsApp Cloud API</h2>
-          <p class="text-xs text-gray-400">From developers.facebook.com → your app → WhatsApp. Webhook URL: <code id="webhook-url" class="bg-gray-100 px-1.5 py-0.5 rounded-md"></code></p>
+          <div class="rounded-2xl p-5" style="background:radial-gradient(120% 120% at 0% 0%,#13301f 0%,#0c1f15 60%)">
+            <p class="text-sm font-bold text-white mb-1">⚡ Guided setup — ~2 minutes, then everything is automatic</p>
+            <p class="text-xs mb-4 leading-relaxed" style="color:#9fb3a8">Meta never shares an app's Secret over any API (security), so one copy-paste is unavoidable. Each step opens the exact page.</p>
+            <div class="space-y-4 text-xs" style="color:#c9d6cd">
+              <div class="flex gap-2.5 items-start">
+                <span class="wiz-n">1</span>
+                <div>Create a Meta app — type <b class="text-gray-200">Business</b>. Skip if you already have one.
+                  <a href="https://developers.facebook.com/apps/create/" target="_blank" rel="noopener" class="wiz-link">Open app creator ↗</a></div>
+              </div>
+              <div class="flex gap-2.5 items-start">
+                <span class="wiz-n">2</span>
+                <div class="flex-1 min-w-0">Copy the App ID &amp; App Secret from <a id="wiz-basic-link" href="https://developers.facebook.com/apps/" target="_blank" rel="noopener" class="wiz-link">App Settings → Basic ↗</a> and paste here:
+                  <div class="flex gap-2 mt-2 flex-wrap">
+                    <input id="wiz-app-id" placeholder="App ID" class="wiz-in w-36">
+                    <input id="wiz-app-secret" type="password" placeholder="App Secret" class="wiz-in flex-1 min-w-[140px]">
+                    <button type="button" id="wiz-save" class="btn-primary px-4 py-1.5 text-xs">Save</button>
+                  </div>
+                  <span id="wiz-saved" class="block mt-1.5 text-emerald-400"></span>
+                </div>
+              </div>
+              <div class="flex gap-2.5 items-start">
+                <span class="wiz-n">3</span>
+                <div class="min-w-0">Add this OAuth redirect URI in <a id="wiz-login-link" href="https://developers.facebook.com/apps/" target="_blank" rel="noopener" class="wiz-link">Facebook Login → Settings ↗</a>:
+                  <div class="flex items-center gap-2 mt-1.5 flex-wrap">
+                    <code id="wa-redirect-uri" class="bg-white/10 px-1.5 py-1 rounded-md text-gray-300 break-all"></code>
+                    <button type="button" id="wiz-copy" class="px-2.5 py-1 rounded-lg text-[11px] font-semibold" style="background:rgba(255,255,255,.1);color:#d4e3da">Copy</button>
+                  </div>
+                </div>
+              </div>
+              <div class="flex gap-2.5 items-start">
+                <span class="wiz-n">4</span>
+                <div>
+                  <a href="/api/admin/wa/connect" class="btn-primary inline-block px-5 py-2 text-xs">Connect with Facebook →</a>
+                  <span class="block mt-1.5" style="color:#7d948a">Access token, WABA ID, Phone Number ID, verify token, webhook, lead-ads pages — all automatic from here.</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <p class="text-xs text-gray-400">Or fill manually — from developers.facebook.com → your app → WhatsApp. Webhook URL: <code id="webhook-url" class="bg-gray-100 px-1.5 py-0.5 rounded-md"></code></p>
           <label class="block text-sm">Phone Number ID<input name="whatsapp_phone_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
           <label class="block text-sm">Access Token <span id="wa-tok-set" class="text-green-600 text-xs"></span><input name="whatsapp_token" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
           <label class="block text-sm">Verify Token<input name="whatsapp_verify_token" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
@@ -434,6 +479,7 @@
         <!-- 2 -->
         <div class="card p-6">
           <h2 class="font-bold text-base mb-2">2 · Connect WhatsApp (Cloud API)</h2>
+          <p class="text-xs text-emerald-800 bg-emerald-50 border border-emerald-100 rounded-xl p-2.5 mb-2">⚡ <b>Shortcut:</b> save your App ID &amp; Secret in Settings, add the OAuth redirect URI shown there, then click <b>Connect with Facebook</b> in Settings → WhatsApp Cloud API. Steps 2–5 below happen automatically. The manual way:</p>
           <ol class="list-decimal pl-5 space-y-1 text-gray-700">
             <li>In your Meta app → <b>WhatsApp → API Setup</b>.</li>
             <li>Copy the <b>Phone Number ID</b> (not the phone number itself) → paste in Settings.</li>
