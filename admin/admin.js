@@ -32,7 +32,7 @@ $('#logout-btn').addEventListener('click', async()=>{ await api('/api/auth/logou
 // ───────── Nav ─────────
 function nav(name){
   $$('.pane').forEach(p=>p.classList.toggle('hidden', p.dataset.pane!==name));
-  $$('.nav-item').forEach(b=>b.classList.toggle('bg-white/10', b.dataset.nav===name));
+  $$('.nav-item').forEach(b=>b.classList.toggle('active', b.dataset.nav===name));
   if(name==='dashboard') loadDashboard();
   if(name==='whatsapp') loadWhatsApp();
   if(name==='leads') loadLeads();
@@ -70,7 +70,7 @@ async function loadDashboard(){
     {label:'AI auto-reply',val:st.botEnabled?'On':'Off',icon:'🤖'},
     {label:'',val:'',icon:''}
   ];
-  box.innerHTML=cards.filter(c=>c.label).map(c=>`<div class="bg-white border border-gray-200 rounded-xl p-4"><div class="text-2xl">${c.icon}</div><div class="text-xl font-extrabold mt-1">${esc(c.val)}</div><div class="text-xs text-gray-500">${esc(c.label)}</div></div>`).join('');
+  box.innerHTML=cards.filter(c=>c.label).map(c=>`<div class="card stat-card p-5"><div class="stat-ic">${c.icon}</div><div class="text-2xl font-extrabold tracking-tight mt-3">${esc(c.val)}</div><div class="text-xs text-gray-500 mt-0.5">${esc(c.label)}</div></div>`).join('');
   $('#dash-conn').innerHTML = st.configured ? '<span class="text-emerald-600 font-semibold">● WhatsApp connected'+(st.botEnabled?' · AI on':'')+'</span>' : '<span class="text-amber-600">● WhatsApp not connected — add credentials in Settings.</span>';
 }
 

@@ -5,63 +5,157 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>LeadFlow — Admin</title>
 <script src="https://cdn.tailwindcss.com"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  :root{ --brand:#15291f; --brand2:#1f3a2c; --accent:#25D366; }
-  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:#f4f6f4;color:#0f1a14}
+  :root{
+    --brand:#0c1f15; --brand2:#11271c; --accent:#25D366; --accent2:#0ea474;
+    --ink:#0d1b14; --muted:#6b7c72; --line:#e7ece8; --bg:#f2f5f3;
+  }
+  *{scrollbar-width:thin;scrollbar-color:#c9d4cd transparent}
+  ::-webkit-scrollbar{width:6px;height:6px}
+  ::-webkit-scrollbar-thumb{background:#c9d4cd;border-radius:99px}
+  ::-webkit-scrollbar-track{background:transparent}
+  ::selection{background:rgba(37,211,102,.25)}
+  body{font-family:'Inter',-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--ink);-webkit-font-smoothing:antialiased}
   .hidden{display:none!important}
-  /* chat */
-  .wa-convo{width:100%;display:flex;gap:10px;align-items:center;padding:10px 12px;border-bottom:1px solid #f0f2f0;text-align:left;cursor:pointer;background:#fff}
-  .wa-convo:hover{background:#f7faf8}
-  .wa-convo.active{background:#eafaf0}
-  .wa-av{width:38px;height:38px;border-radius:50%;background:#d6efe0;color:#15291f;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;flex:none}
-  .wa-row{display:flex;margin-bottom:6px}
+
+  /* ── cards & buttons ── */
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;box-shadow:0 1px 2px rgba(13,27,20,.04),0 12px 32px -24px rgba(13,27,20,.22)}
+  .btn-primary{background:linear-gradient(135deg,#16a34a,#25D366);color:#fff;font-weight:700;border-radius:12px;box-shadow:0 6px 16px -6px rgba(22,163,74,.55);transition:transform .15s ease,box-shadow .15s ease}
+  .btn-primary:hover{transform:translateY(-1px);box-shadow:0 10px 22px -6px rgba(22,163,74,.6)}
+  .btn-primary:active{transform:translateY(0)}
+  .btn-ghost{border:1px solid var(--line);background:#fff;border-radius:10px;color:#3c4a42;font-weight:500;transition:all .15s ease}
+  .btn-ghost:hover{background:#f6faf7;border-color:#d4ded7}
+  .eyebrow{font-size:11px;font-weight:800;letter-spacing:.14em;text-transform:uppercase;background:linear-gradient(135deg,#16a34a,#25D366);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ── inputs ── */
+  input,textarea,select{outline:none;transition:border-color .15s ease,box-shadow .15s ease;background:#fff}
+  input:focus,textarea:focus,select:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(37,211,102,.14)}
+  #view-app .border-gray-300{border-color:#dde5df}
+
+  /* ── JS-rendered card harmonizing ── */
+  #view-app .bg-white.border{border-color:var(--line);box-shadow:0 1px 2px rgba(13,27,20,.03),0 10px 28px -24px rgba(13,27,20,.2)}
+  #view-app thead tr{letter-spacing:.08em}
+
+  /* ── login ── */
+  #view-login{min-height:100vh;position:relative;overflow:hidden;background:#070f0b}
+  #view-login::before{content:'';position:absolute;inset:-20%;background:
+    radial-gradient(40% 38% at 20% 18%, rgba(37,211,102,.22) 0%, transparent 70%),
+    radial-gradient(34% 32% at 82% 78%, rgba(14,164,116,.2) 0%, transparent 70%),
+    radial-gradient(26% 24% at 70% 12%, rgba(56,189,248,.12) 0%, transparent 70%);
+    filter:blur(10px);animation:drift 16s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:translate(0,0) scale(1)}to{transform:translate(2%,3%) scale(1.05)}}
+  #view-login .glass{position:relative;background:rgba(255,255,255,.055);backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);border:1px solid rgba(255,255,255,.12);border-radius:24px;box-shadow:0 40px 80px -32px rgba(0,0,0,.6)}
+  #view-login input{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.14);color:#fff;border-radius:12px;caret-color:var(--accent)}
+  #view-login input:focus{border-color:var(--accent)!important;box-shadow:0 0 0 3px rgba(37,211,102,.18)}
+  #view-login input::placeholder{color:rgba(255,255,255,.35)}
+  #view-login label{color:#b7c6bd}
+  .logo-grad{background:linear-gradient(135deg,#34e07a,#25D366 45%,#7ce8a8);-webkit-background-clip:text;background-clip:text;color:transparent}
+
+  /* ── sidebar ── */
+  aside.sidebar{background:radial-gradient(140% 90% at 0% 0%, #122b1e 0%, #0a1711 55%, #07110c 100%);border-right:1px solid rgba(255,255,255,.05)}
+  .nav-item{display:flex;align-items:center;gap:11px;width:100%;padding:10px 12px;border-radius:12px;color:#93a89b;font-weight:500;font-size:13.5px;transition:all .15s ease;text-align:left}
+  .nav-item svg{width:18px;height:18px;flex:none;opacity:.85}
+  .nav-item:hover{background:rgba(255,255,255,.06);color:#fff}
+  .nav-item.active{background:linear-gradient(135deg,rgba(37,211,102,.2),rgba(37,211,102,.05));color:#fff;box-shadow:inset 0 0 0 1px rgba(37,211,102,.3)}
+  .nav-item.active svg{color:var(--accent);opacity:1}
+
+  /* ── panes / tabs ── */
+  .pane{animation:fadeUp .28s ease}
+  @keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+  .seg{display:flex;gap:4px;background:#e8eee9;border-radius:14px;padding:4px}
+  .tab-btn{padding:7px 16px;border-radius:10px;font-weight:600;font-size:13px;color:#5b6b62;transition:all .15s ease}
+  .tab-btn:hover{color:var(--ink)}
+  .tab-btn.active{background:#fff;color:var(--brand);box-shadow:0 2px 8px rgba(13,27,20,.1);font-weight:700}
+
+  /* ── stat cards ── */
+  .stat-card{transition:transform .18s ease,box-shadow .18s ease}
+  .stat-card:hover{transform:translateY(-2px);box-shadow:0 16px 36px -22px rgba(13,27,20,.35)}
+  .stat-ic{width:42px;height:42px;border-radius:13px;background:linear-gradient(135deg,#ecfdf3,#d6f8e3);display:flex;align-items:center;justify-content:center;font-size:19px;box-shadow:inset 0 0 0 1px rgba(37,211,102,.18)}
+
+  /* ── chat ── */
+  .wa-convo{width:100%;display:flex;gap:11px;align-items:center;padding:11px 13px;border-bottom:1px solid #f1f4f1;text-align:left;cursor:pointer;background:#fff;transition:background .12s ease}
+  .wa-convo:hover{background:#f6faf7}
+  .wa-convo.active{background:linear-gradient(90deg,#e9fbf0,#f3fdf7);box-shadow:inset 3px 0 0 var(--accent)}
+  .wa-av{width:40px;height:40px;border-radius:14px;background:linear-gradient(135deg,#16a34a,#25D366);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;flex:none;box-shadow:0 4px 10px -4px rgba(22,163,74,.5)}
+  .wa-row{display:flex;margin-bottom:7px}
   .wa-row.out{justify-content:flex-end}
-  .wa-bubble{max-width:75%;padding:7px 11px;border-radius:10px;font-size:13px;line-height:1.4;white-space:pre-wrap;word-break:break-word}
-  .wa-row.in .wa-bubble{background:#fff;border:1px solid #e7ebe8}
-  .wa-row.out .wa-bubble{background:#d9fdd3}
+  .wa-bubble{max-width:75%;padding:8px 12px;border-radius:16px;font-size:13px;line-height:1.45;white-space:pre-wrap;word-break:break-word;box-shadow:0 1px 2px rgba(13,27,20,.06)}
+  .wa-row.in .wa-bubble{background:#fff;border:1px solid #e8ece9;border-bottom-left-radius:6px}
+  .wa-row.out .wa-bubble{background:linear-gradient(135deg,#dcfce7,#d3fbd0);border-bottom-right-radius:6px}
   .wa-meta{display:block;font-size:9px;color:#7a8a82;margin-top:3px}
-  .badge{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--accent);color:#fff;font-size:10px;font-weight:700}
-  .tab-btn.active{background:#fff;color:var(--brand);box-shadow:0 1px 3px rgba(0,0,0,.08);font-weight:700}
-  input,textarea,select{outline:none}
-  input:focus,textarea:focus,select:focus{border-color:#c9a96e}
-  .toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#15291f;color:#fff;padding:10px 18px;border-radius:10px;font-size:13px;z-index:100;box-shadow:0 8px 24px rgba(0,0,0,.2)}
+  #wa-messages{background-color:#f3f6f3;background-image:radial-gradient(#dfe8e1 1px,transparent 1px);background-size:20px 20px}
+  .badge{display:inline-flex;align-items:center;justify-content:center;min-width:19px;height:19px;padding:0 6px;border-radius:10px;background:linear-gradient(135deg,#16a34a,#25D366);color:#fff;font-size:10px;font-weight:800;box-shadow:0 3px 8px -2px rgba(22,163,74,.5)}
+
+  /* ── toast ── */
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(12,31,21,.92);backdrop-filter:blur(12px);color:#fff;padding:11px 20px;border-radius:14px;font-size:13px;font-weight:500;z-index:100;box-shadow:0 16px 40px -12px rgba(0,0,0,.45);border:1px solid rgba(255,255,255,.08);animation:toastIn .25s ease}
+  @keyframes toastIn{from{opacity:0;transform:translate(-50%,10px)}to{opacity:1;transform:translate(-50%,0)}}
 </style>
 </head>
 <body>
 
 <!-- LOGIN -->
 <div id="view-login" class="min-h-screen flex items-center justify-center p-4">
-  <form id="login-form" class="bg-white rounded-2xl shadow-xl w-full max-w-md p-8">
-    <div class="text-center mb-6">
-      <div class="text-2xl font-extrabold tracking-tight" style="color:var(--brand)">Lead<span style="color:var(--accent)">Flow</span></div>
-      <p class="text-sm text-gray-400 mt-1">WhatsApp &amp; Meta Lead CRM</p>
+  <form id="login-form" class="glass w-full max-w-md p-9">
+    <div class="text-center mb-8">
+      <div class="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4" style="background:linear-gradient(135deg,#16a34a,#25D366);box-shadow:0 12px 28px -8px rgba(37,211,102,.55)">
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+      <div class="text-3xl font-black tracking-tight text-white">Lead<span class="logo-grad">Flow</span></div>
+      <p class="text-sm mt-1.5" style="color:#8fa396">WhatsApp &amp; Meta Lead CRM — self-hosted</p>
     </div>
-    <label class="block text-sm font-semibold mb-1">Username</label>
-    <input id="login-username" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 mb-4" autocomplete="username">
-    <label class="block text-sm font-semibold mb-1">Password</label>
-    <input id="login-password" type="password" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 mb-4" autocomplete="current-password">
-    <p id="login-error" class="hidden text-sm text-red-500 mb-3"></p>
-    <button class="w-full text-white font-bold py-2.5 rounded-lg" style="background:var(--brand)">Sign In</button>
+    <label class="block text-xs font-semibold mb-1.5 tracking-wide">USERNAME</label>
+    <input id="login-username" class="w-full px-3.5 py-3 mb-4 text-sm" autocomplete="username">
+    <label class="block text-xs font-semibold mb-1.5 tracking-wide">PASSWORD</label>
+    <input id="login-password" type="password" class="w-full px-3.5 py-3 mb-5 text-sm" autocomplete="current-password">
+    <p id="login-error" class="hidden text-sm text-red-400 mb-3"></p>
+    <button class="btn-primary w-full py-3 text-sm">Sign In →</button>
   </form>
 </div>
 
 <!-- APP -->
 <div id="view-app" class="hidden min-h-screen flex">
   <!-- Sidebar -->
-  <aside class="w-56 bg-[#0f1a14] text-gray-300 flex-none flex flex-col">
-    <div class="px-5 py-4 text-xl font-extrabold text-white">Lead<span style="color:var(--accent)">Flow</span></div>
-    <nav class="flex-1 px-2 space-y-1 text-sm">
-      <button data-nav="dashboard" class="nav-item w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/10">📊 Dashboard</button>
-      <button data-nav="whatsapp" class="nav-item w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/10 flex items-center justify-between">
-        <span>💬 WhatsApp</span><span id="wa-badge" class="badge hidden">0</span>
+  <aside class="sidebar w-60 text-gray-300 flex-none flex flex-col">
+    <div class="px-5 pt-6 pb-5 flex items-center gap-2.5">
+      <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-none" style="background:linear-gradient(135deg,#16a34a,#25D366);box-shadow:0 8px 18px -6px rgba(37,211,102,.5)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      </div>
+      <span class="text-lg font-black tracking-tight text-white">Lead<span class="logo-grad">Flow</span></span>
+    </div>
+    <nav class="flex-1 px-3 space-y-1">
+      <button data-nav="dashboard" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+        <span>Dashboard</span>
       </button>
-      <button data-nav="leads" class="nav-item w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/10">📥 Leads</button>
-      <button data-nav="settings" class="nav-item w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/10">⚙️ Settings</button>
-      <button data-nav="help" class="nav-item w-full text-left px-3 py-2.5 rounded-lg hover:bg-white/10">❓ Help &amp; Setup</button>
+      <button data-nav="whatsapp" class="nav-item justify-between">
+        <span class="flex items-center gap-[11px]">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="width:18px;height:18px"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+          <span>WhatsApp</span>
+        </span>
+        <span id="wa-badge" class="badge hidden">0</span>
+      </button>
+      <button data-nav="leads" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"/><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"/></svg>
+        <span>Leads</span>
+      </button>
+      <button data-nav="settings" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="21" x2="4" y2="14"/><line x1="4" y1="10" x2="4" y2="3"/><line x1="12" y1="21" x2="12" y2="12"/><line x1="12" y1="8" x2="12" y2="3"/><line x1="20" y1="21" x2="20" y2="16"/><line x1="20" y1="12" x2="20" y2="3"/><line x1="1" y1="14" x2="7" y2="14"/><line x1="9" y1="8" x2="15" y2="8"/><line x1="17" y1="16" x2="23" y2="16"/></svg>
+        <span>Settings</span>
+      </button>
+      <button data-nav="help" class="nav-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Help &amp; Setup</span>
+      </button>
     </nav>
-    <div class="px-3 py-3 border-t border-white/10 text-xs flex items-center justify-between">
-      <span id="me-name" class="truncate">—</span>
-      <button id="logout-btn" class="hover:text-white underline">Logout</button>
+    <div class="px-4 py-4 mx-3 mb-3 rounded-xl text-xs flex items-center justify-between" style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07)">
+      <span class="flex items-center gap-2 min-w-0">
+        <span class="w-2 h-2 rounded-full flex-none" style="background:var(--accent);box-shadow:0 0 8px rgba(37,211,102,.8)"></span>
+        <span id="me-name" class="truncate text-gray-300 font-medium">—</span>
+      </span>
+      <button id="logout-btn" class="text-gray-500 hover:text-white transition-colors font-medium">Logout</button>
     </div>
   </aside>
 
@@ -69,8 +163,9 @@
   <main class="flex-1 min-w-0 overflow-y-auto h-screen">
 
     <!-- DASHBOARD -->
-    <section data-pane="dashboard" class="pane p-6">
-      <h1 class="text-2xl font-extrabold mb-1">Dashboard</h1>
+    <section data-pane="dashboard" class="pane p-7">
+      <p class="eyebrow mb-1">Overview</p>
+      <h1 class="text-2xl font-extrabold tracking-tight mb-1">Dashboard</h1>
       <p class="text-sm text-gray-500 mb-6">Your WhatsApp &amp; lead activity at a glance.</p>
       <div class="grid grid-cols-2 md:grid-cols-4 gap-4" id="dash-stats"></div>
       <div id="dash-conn" class="mt-6 text-sm"></div>
@@ -80,60 +175,65 @@
     <section data-pane="whatsapp" class="pane hidden">
       <!-- lock gate -->
       <div id="wa-gate" class="hidden min-h-[70vh] flex items-center justify-center p-6">
-        <div class="bg-white rounded-2xl shadow w-full max-w-md p-8 text-center">
+        <div class="card w-full max-w-md p-8 text-center">
           <div class="text-4xl mb-2">🔒</div>
           <h2 class="text-xl font-bold mb-1">WhatsApp is locked</h2>
           <p class="text-sm text-gray-500 mb-4">Enter the WhatsApp password to view chats, contacts &amp; campaigns.</p>
-          <input id="wa-pw" type="password" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 mb-3" placeholder="WhatsApp password">
-          <button id="wa-unlock-btn" class="w-full text-white font-bold py-2.5 rounded-lg" style="background:var(--brand)">Unlock WhatsApp</button>
+          <input id="wa-pw" type="password" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 mb-3" placeholder="WhatsApp password">
+          <button id="wa-unlock-btn" class="btn-primary w-full py-2.5">Unlock WhatsApp</button>
         </div>
       </div>
 
       <!-- unlocked -->
       <div id="wa-app" class="hidden">
-        <div class="px-6 pt-5 pb-3 flex items-center gap-3 flex-wrap">
-          <h1 class="text-2xl font-extrabold">💬 WhatsApp</h1>
-          <span id="wa-status-pill" class="text-xs text-gray-400">●</span>
-          <button id="wa-refresh" class="ml-auto text-xs border border-gray-300 rounded-lg px-3 py-1.5 hover:bg-gray-50">↻ Refresh</button>
-          <button id="wa-lock-btn" class="hidden text-xs border border-gray-300 rounded-lg px-3 py-1.5 hover:bg-gray-50">🔒 Lock</button>
+        <div class="px-7 pt-6 pb-3 flex items-center gap-3 flex-wrap">
+          <div>
+            <p class="eyebrow mb-0.5">Messaging</p>
+            <h1 class="text-2xl font-extrabold tracking-tight">WhatsApp</h1>
+          </div>
+          <span id="wa-status-pill" class="text-xs text-gray-400 mt-3">●</span>
+          <button id="wa-refresh" class="btn-ghost ml-auto text-xs px-3.5 py-2">↻ Refresh</button>
+          <button id="wa-lock-btn" class="hidden btn-ghost text-xs px-3.5 py-2">🔒 Lock</button>
         </div>
         <!-- spend strip -->
-        <div id="wa-spend" class="hidden mx-6 mb-3 bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm flex gap-6 flex-wrap"></div>
+        <div id="wa-spend" class="hidden mx-7 mb-4 card px-5 py-3.5 text-sm flex gap-8 flex-wrap"></div>
         <!-- sub-tabs -->
-        <div class="px-6 flex gap-1 bg-gray-100/60 mx-6 rounded-xl p-1 w-max text-sm mb-4 flex-wrap">
-          <button data-wa="chats" class="tab-btn px-4 py-1.5 rounded-lg">Chats</button>
-          <button data-wa="contacts" class="tab-btn px-4 py-1.5 rounded-lg">Contacts</button>
-          <button data-wa="broadcast" class="tab-btn px-4 py-1.5 rounded-lg">Broadcast</button>
-          <button data-wa="templates" class="tab-btn px-4 py-1.5 rounded-lg">Templates</button>
-          <button data-wa="sequences" class="tab-btn px-4 py-1.5 rounded-lg">Sequences</button>
-          <button data-wa="analytics" class="tab-btn px-4 py-1.5 rounded-lg">Analytics</button>
+        <div class="mx-7 mb-5 seg w-max text-sm flex-wrap">
+          <button data-wa="chats" class="tab-btn">Chats</button>
+          <button data-wa="contacts" class="tab-btn">Contacts</button>
+          <button data-wa="broadcast" class="tab-btn">Broadcast</button>
+          <button data-wa="templates" class="tab-btn">Templates</button>
+          <button data-wa="sequences" class="tab-btn">Sequences</button>
+          <button data-wa="analytics" class="tab-btn">Analytics</button>
         </div>
 
         <!-- CHATS -->
-        <div data-wasub="chats" class="wa-sub px-6 pb-6">
-          <div class="bg-white border border-gray-200 rounded-xl flex" style="height:calc(100vh - 230px);min-height:420px">
-            <div class="w-72 border-r border-gray-200 flex flex-col flex-none">
-              <input id="wa-search" placeholder="Search conversations…" class="m-3 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+        <div data-wasub="chats" class="wa-sub px-7 pb-7">
+          <div class="card flex overflow-hidden" style="height:calc(100vh - 240px);min-height:420px">
+            <div class="w-72 border-r flex flex-col flex-none" style="border-color:var(--line)">
+              <input id="wa-search" placeholder="Search conversations…" class="m-3 border border-gray-300 rounded-xl px-3.5 py-2 text-sm" style="background:#f6f9f7">
               <div id="wa-convos" class="flex-1 overflow-y-auto"></div>
             </div>
             <div class="flex-1 flex flex-col min-w-0">
               <div id="wa-thread-empty" class="flex-1 flex items-center justify-center text-gray-400 text-sm">Select a conversation</div>
               <div id="wa-thread" class="hidden flex-1 flex-col min-h-0">
-                <div class="px-4 py-3 border-b border-gray-200 flex items-center gap-3" style="background:#f7faf8">
+                <div class="px-4 py-3 border-b flex items-center gap-3" style="border-color:var(--line);background:#fafdfb">
                   <div class="wa-av" id="wa-thread-av">?</div>
-                  <div class="min-w-0"><p class="font-semibold text-sm truncate" id="wa-thread-name">—</p><p class="text-xs text-gray-400" id="wa-thread-phone">—</p></div>
+                  <div class="min-w-0"><p class="font-bold text-sm truncate" id="wa-thread-name">—</p><p class="text-xs text-gray-400" id="wa-thread-phone">—</p></div>
                   <div class="ml-auto flex items-center gap-3">
                     <select id="wa-thread-label" class="border border-gray-300 rounded-lg px-2 py-1 text-xs bg-white">
                       <option value="">No label</option><option>New</option><option>Open</option><option>Hot lead</option><option>Follow-up</option><option>Resolved</option>
                     </select>
-                    <label class="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer"><input type="checkbox" id="wa-ai-pause"> AI paused</label>
+                    <label class="flex items-center gap-1.5 text-xs text-gray-600 cursor-pointer"><input type="checkbox" id="wa-ai-pause" class="accent-emerald-600"> AI paused</label>
                   </div>
                 </div>
-                <div id="wa-messages" class="flex-1 overflow-y-auto p-4" style="background:#eae6df"></div>
+                <div id="wa-messages" class="flex-1 overflow-y-auto p-4"></div>
                 <div id="wa-window-banner" class="hidden text-xs px-4 py-2 border-t font-medium"></div>
-                <div class="border-t border-gray-200 p-3 flex items-end gap-2 bg-white">
-                  <textarea id="wa-reply-input" rows="1" placeholder="Type a reply…" class="flex-1 resize-none border border-gray-300 rounded-xl px-3 py-2 text-sm max-h-24"></textarea>
-                  <button id="wa-reply-send" class="text-white font-bold w-10 h-10 rounded-full flex items-center justify-center flex-none" style="background:var(--accent)">➤</button>
+                <div class="border-t p-3 flex items-end gap-2 bg-white" style="border-color:var(--line)">
+                  <textarea id="wa-reply-input" rows="1" placeholder="Type a reply…" class="flex-1 resize-none border border-gray-300 rounded-2xl px-4 py-2.5 text-sm max-h-24" style="background:#f6f9f7"></textarea>
+                  <button id="wa-reply-send" class="text-white font-bold w-11 h-11 rounded-full flex items-center justify-center flex-none transition-transform hover:scale-105" style="background:linear-gradient(135deg,#16a34a,#25D366);box-shadow:0 6px 16px -4px rgba(22,163,74,.55)">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2.01 21 23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+                  </button>
                 </div>
               </div>
             </div>
@@ -141,80 +241,80 @@
         </div>
 
         <!-- CONTACTS -->
-        <div data-wasub="contacts" class="wa-sub hidden px-6 pb-6">
-          <div id="fb-status" class="bg-white border border-gray-200 rounded-xl p-4 mb-4 flex flex-wrap items-center gap-3 text-sm"></div>
+        <div data-wasub="contacts" class="wa-sub hidden px-7 pb-7">
+          <div id="fb-status" class="card p-4 mb-4 flex flex-wrap items-center gap-3 text-sm"></div>
           <div class="flex gap-4 flex-wrap">
-            <div class="flex-1 min-w-0 bg-white border border-gray-200 rounded-xl p-4">
+            <div class="flex-1 min-w-0 card p-5">
               <div class="flex gap-2 mb-3 flex-wrap">
-                <input id="wac-search" placeholder="Search name/number/tag…" class="border border-gray-300 rounded-lg px-3 py-2 text-sm flex-1">
-                <button id="wac-export" class="text-xs border border-gray-300 rounded-lg px-3 py-2 hover:bg-gray-50">Export CSV</button>
+                <input id="wac-search" placeholder="Search name/number/tag…" class="border border-gray-300 rounded-xl px-3.5 py-2 text-sm flex-1" style="background:#f6f9f7">
+                <button id="wac-export" class="btn-ghost text-xs px-3.5 py-2">Export CSV</button>
               </div>
               <div id="wac-tags" class="flex gap-1.5 flex-wrap mb-3 text-xs"></div>
               <div id="wac-list" class="overflow-x-auto"></div>
             </div>
-            <div class="w-64 flex-none bg-white border border-gray-200 rounded-xl p-4 space-y-2">
-              <p class="font-semibold text-sm mb-1">Add contact</p>
-              <input id="wac-name" placeholder="Name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-              <input id="wac-phone" placeholder="Mobile number" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-              <input id="wac-newtags" placeholder="Tags (comma-separated)" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-              <button id="wac-add" class="w-full text-white font-semibold py-2 rounded-lg text-sm" style="background:var(--brand)">Add</button>
-              <hr class="my-2">
-              <p class="font-semibold text-sm">Bulk import</p>
-              <textarea id="wac-import-nums" rows="3" placeholder="Numbers, one per line" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea>
-              <input id="wac-import-tags" placeholder="Tags for all" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-              <button id="wac-import" class="w-full border border-gray-300 py-2 rounded-lg text-sm hover:bg-gray-50">Import numbers</button>
+            <div class="w-64 flex-none card p-5 space-y-2">
+              <p class="font-bold text-sm mb-1">Add contact</p>
+              <input id="wac-name" placeholder="Name" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <input id="wac-phone" placeholder="Mobile number" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <input id="wac-newtags" placeholder="Tags (comma-separated)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <button id="wac-add" class="btn-primary w-full py-2 text-sm">Add</button>
+              <hr class="my-2" style="border-color:var(--line)">
+              <p class="font-bold text-sm">Bulk import</p>
+              <textarea id="wac-import-nums" rows="3" placeholder="Numbers, one per line" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm"></textarea>
+              <input id="wac-import-tags" placeholder="Tags for all" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <button id="wac-import" class="btn-ghost w-full py-2 text-sm">Import numbers</button>
             </div>
           </div>
         </div>
 
         <!-- BROADCAST -->
-        <div data-wasub="broadcast" class="wa-sub hidden px-6 pb-6">
-          <div class="bg-white border border-gray-200 rounded-xl p-5 max-w-2xl space-y-3">
-            <p class="text-xs bg-amber-50 text-amber-800 border border-amber-100 rounded-lg p-2">Broadcasts use an approved Meta <b>template</b>. Marketing templates are paid (~₹0.8/msg in India).</p>
+        <div data-wasub="broadcast" class="wa-sub hidden px-7 pb-7">
+          <div class="card p-6 max-w-2xl space-y-3">
+            <p class="text-xs bg-amber-50 text-amber-800 border border-amber-100 rounded-xl p-2.5">Broadcasts use an approved Meta <b>template</b>. Marketing templates are paid (~₹0.8/msg in India).</p>
             <label class="block text-sm font-semibold">Audience</label>
-            <select id="bc-audience" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <select id="bc-audience" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
               <option value="paste">Paste numbers</option><option value="all">All contacts</option><option value="tag">By tag</option>
             </select>
-            <textarea id="bc-numbers" rows="3" placeholder="Numbers, one per line" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm"></textarea>
-            <input id="bc-tag" placeholder="Tag name (if 'By tag')" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm hidden">
+            <textarea id="bc-numbers" rows="3" placeholder="Numbers, one per line" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm"></textarea>
+            <input id="bc-tag" placeholder="Tag name (if 'By tag')" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm hidden">
             <label class="block text-sm font-semibold">Template name</label>
-            <input id="bc-template" placeholder="e.g. hello_world" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <input id="bc-template" placeholder="e.g. hello_world" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
             <div class="flex gap-2">
-              <input id="bc-lang" value="en_US" placeholder="Lang" class="w-28 border border-gray-300 rounded-lg px-3 py-2 text-sm">
-              <input id="bc-params" placeholder="Variables, comma-separated (use {name})" class="flex-1 border border-gray-300 rounded-lg px-3 py-2 text-sm">
+              <input id="bc-lang" value="en_US" placeholder="Lang" class="w-28 border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <input id="bc-params" placeholder="Variables, comma-separated (use {name})" class="flex-1 border border-gray-300 rounded-xl px-3 py-2 text-sm">
             </div>
-            <input id="bc-schedule" type="datetime-local" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-            <button id="bc-send" class="text-white font-bold px-5 py-2.5 rounded-lg" style="background:var(--accent)">Send broadcast</button>
+            <input id="bc-schedule" type="datetime-local" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+            <button id="bc-send" class="btn-primary px-6 py-2.5">Send broadcast</button>
             <div id="bc-result" class="text-sm"></div>
           </div>
-          <div class="mt-5 max-w-2xl"><h3 class="font-semibold text-sm mb-2">Recent broadcasts</h3><div id="bc-history" class="space-y-2"></div></div>
+          <div class="mt-5 max-w-2xl"><h3 class="font-bold text-sm mb-2">Recent broadcasts</h3><div id="bc-history" class="space-y-2"></div></div>
         </div>
 
         <!-- TEMPLATES -->
-        <div data-wasub="templates" class="wa-sub hidden px-6 pb-6">
-          <div class="flex items-center mb-3"><h3 class="font-semibold">Message templates</h3><button id="tpl-refresh" class="ml-auto text-xs border border-gray-300 rounded-lg px-3 py-1.5 hover:bg-gray-50">↻ Refresh</button></div>
+        <div data-wasub="templates" class="wa-sub hidden px-7 pb-7">
+          <div class="flex items-center mb-3"><h3 class="font-bold">Message templates</h3><button id="tpl-refresh" class="btn-ghost ml-auto text-xs px-3.5 py-2">↻ Refresh</button></div>
           <div id="tpl-list" class="space-y-2"></div>
         </div>
 
         <!-- SEQUENCES -->
-        <div data-wasub="sequences" class="wa-sub hidden px-6 pb-6">
+        <div data-wasub="sequences" class="wa-sub hidden px-7 pb-7">
           <div class="flex gap-4 flex-wrap">
-            <div class="flex-1 min-w-0"><h3 class="font-semibold text-sm mb-2">Sequences</h3><div id="seq-list" class="space-y-2"></div></div>
-            <div class="w-72 flex-none bg-white border border-gray-200 rounded-xl p-4 space-y-2">
-              <p class="font-semibold text-sm">New sequence</p>
-              <input id="seq-name" placeholder="Sequence name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
-              <input id="seq-trigger" placeholder="Auto-enroll tag (optional)" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm">
+            <div class="flex-1 min-w-0"><h3 class="font-bold text-sm mb-2">Sequences</h3><div id="seq-list" class="space-y-2"></div></div>
+            <div class="w-72 flex-none card p-5 space-y-2">
+              <p class="font-bold text-sm">New sequence</p>
+              <input id="seq-name" placeholder="Sequence name" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
+              <input id="seq-trigger" placeholder="Auto-enroll tag (optional)" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm">
               <div id="seq-steps" class="space-y-2"></div>
-              <button id="seq-addstep" class="w-full border border-gray-300 py-1.5 rounded-lg text-xs hover:bg-gray-50">+ Add step</button>
-              <button id="seq-save" class="w-full text-white font-semibold py-2 rounded-lg text-sm" style="background:var(--brand)">Save sequence</button>
+              <button id="seq-addstep" class="btn-ghost w-full py-1.5 text-xs">+ Add step</button>
+              <button id="seq-save" class="btn-primary w-full py-2 text-sm">Save sequence</button>
             </div>
           </div>
         </div>
 
         <!-- ANALYTICS -->
-        <div data-wasub="analytics" class="wa-sub hidden px-6 pb-6">
+        <div data-wasub="analytics" class="wa-sub hidden px-7 pb-7">
           <div id="an-cards" class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-5"></div>
-          <div id="an-campaigns" class="bg-white border border-gray-200 rounded-xl p-4"></div>
+          <div id="an-campaigns" class="card p-5"></div>
         </div>
       </div>
     </section>
@@ -222,104 +322,109 @@
     <!-- LEADS -->
     <section data-pane="leads" class="pane hidden">
       <div id="leads-gate" class="hidden min-h-[70vh] flex items-center justify-center p-6">
-        <div class="bg-white rounded-2xl shadow w-full max-w-md p-8 text-center">
+        <div class="card w-full max-w-md p-8 text-center">
           <div class="text-4xl mb-2">🔒</div>
           <h2 class="text-xl font-bold mb-1">Leads are locked</h2>
           <p class="text-sm text-gray-500 mb-4">Enter the leads password to view enquiries.</p>
-          <input id="leads-pw" type="password" class="w-full border border-gray-300 rounded-lg px-3 py-2.5 mb-3" placeholder="Leads password">
-          <button id="leads-unlock-btn" class="w-full text-white font-bold py-2.5 rounded-lg" style="background:var(--brand)">Unlock Leads</button>
+          <input id="leads-pw" type="password" class="w-full border border-gray-300 rounded-xl px-3 py-2.5 mb-3" placeholder="Leads password">
+          <button id="leads-unlock-btn" class="btn-primary w-full py-2.5">Unlock Leads</button>
         </div>
       </div>
-      <div id="leads-app" class="hidden p-6">
-        <div class="flex items-center gap-3 mb-4 flex-wrap">
-          <h1 class="text-2xl font-extrabold">📥 Leads</h1>
-          <select id="leads-source" class="ml-auto border border-gray-300 rounded-lg px-3 py-1.5 text-sm bg-white">
+      <div id="leads-app" class="hidden p-7">
+        <div class="flex items-end gap-3 mb-5 flex-wrap">
+          <div>
+            <p class="eyebrow mb-0.5">Pipeline</p>
+            <h1 class="text-2xl font-extrabold tracking-tight">Leads</h1>
+          </div>
+          <select id="leads-source" class="ml-auto border border-gray-300 rounded-xl px-3 py-2 text-sm bg-white">
             <option value="">All sources</option><option value="meta_lead">Meta Lead Ads</option><option value="whatsapp">WhatsApp</option><option value="website">Website</option>
           </select>
-          <button id="leads-export" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm hover:bg-gray-50">Export CSV</button>
-          <button id="leads-markall" class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm hover:bg-gray-50">Mark all read</button>
-          <button id="leads-lock" class="hidden border border-gray-300 rounded-lg px-3 py-1.5 text-sm hover:bg-gray-50">🔒 Lock</button>
+          <button id="leads-export" class="btn-ghost px-3.5 py-2 text-sm">Export CSV</button>
+          <button id="leads-markall" class="btn-ghost px-3.5 py-2 text-sm">Mark all read</button>
+          <button id="leads-lock" class="hidden btn-ghost px-3.5 py-2 text-sm">🔒 Lock</button>
         </div>
-        <div id="leads-list" class="bg-white border border-gray-200 rounded-xl overflow-x-auto"></div>
+        <div id="leads-list" class="card overflow-x-auto"></div>
       </div>
     </section>
 
     <!-- SETTINGS -->
-    <section data-pane="settings" class="pane hidden p-6 max-w-3xl">
-      <h1 class="text-2xl font-extrabold mb-1">⚙️ Settings</h1>
+    <section data-pane="settings" class="pane hidden p-7 max-w-3xl">
+      <p class="eyebrow mb-0.5">Configuration</p>
+      <h1 class="text-2xl font-extrabold tracking-tight mb-1">Settings</h1>
       <p class="text-sm text-gray-500 mb-6">Connect WhatsApp &amp; Meta, configure the AI, and set section passwords.</p>
-      <form id="settings-form" class="space-y-6">
-        <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-3">
+      <form id="settings-form" class="space-y-5">
+        <div class="card p-6 space-y-3">
           <h2 class="font-bold">Business</h2>
-          <label class="block text-sm">Business name<input name="business_name" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
-          <div class="flex gap-3"><label class="block text-sm flex-1">Phone<input name="phone_display" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm flex-1">Email<input name="email" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label></div>
+          <label class="block text-sm">Business name<input name="business_name" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+          <div class="flex gap-3"><label class="block text-sm flex-1">Phone<input name="phone_display" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+          <label class="block text-sm flex-1">Email<input name="email" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label></div>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-3">
+        <div class="card p-6 space-y-3">
           <h2 class="font-bold">WhatsApp Cloud API</h2>
-          <p class="text-xs text-gray-400">From developers.facebook.com → your app → WhatsApp. Webhook URL: <code id="webhook-url" class="bg-gray-100 px-1 rounded"></code></p>
-          <label class="block text-sm">Phone Number ID<input name="whatsapp_phone_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm">Access Token <span id="wa-tok-set" class="text-green-600 text-xs"></span><input name="whatsapp_token" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm">Verify Token<input name="whatsapp_verify_token" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm">WABA ID<input name="whatsapp_waba_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
-          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="whatsapp_enabled_bot" value="1"> AI auto-reply ON</label>
+          <p class="text-xs text-gray-400">From developers.facebook.com → your app → WhatsApp. Webhook URL: <code id="webhook-url" class="bg-gray-100 px-1.5 py-0.5 rounded-md"></code></p>
+          <label class="block text-sm">Phone Number ID<input name="whatsapp_phone_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+          <label class="block text-sm">Access Token <span id="wa-tok-set" class="text-green-600 text-xs"></span><input name="whatsapp_token" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+          <label class="block text-sm">Verify Token<input name="whatsapp_verify_token" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+          <label class="block text-sm">WABA ID<input name="whatsapp_waba_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="whatsapp_enabled_bot" value="1" class="accent-emerald-600"> AI auto-reply ON</label>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-3">
+        <div class="card p-6 space-y-3">
           <h2 class="font-bold">Meta Lead Ads</h2>
-          <label class="block text-sm">App ID<input name="whatsapp_app_id" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
-          <label class="block text-sm">App Secret <span id="wa-sec-set" class="text-green-600 text-xs"></span><input name="whatsapp_app_secret" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
+          <label class="block text-sm">App ID<input name="whatsapp_app_id" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+          <label class="block text-sm">App Secret <span id="wa-sec-set" class="text-green-600 text-xs"></span><input name="whatsapp_app_secret" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-3">
+        <div class="card p-6 space-y-3">
           <h2 class="font-bold">AI assistant</h2>
-          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="ai_assistant_enabled" value="1"> AI enabled</label>
-          <label class="block text-sm">Business info / FAQ (the AI answers from this)<textarea name="ai_business_info" rows="5" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1" placeholder="Paste what your AI should know: products, prices, hours, policies, FAQs…"></textarea></label>
-          <label class="block text-sm">Custom system prompt (optional)<textarea name="ai_system_prompt" rows="2" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></textarea></label>
+          <label class="flex items-center gap-2 text-sm"><input type="checkbox" name="ai_assistant_enabled" value="1" class="accent-emerald-600"> AI enabled</label>
+          <label class="block text-sm">Business info / FAQ (the AI answers from this)<textarea name="ai_business_info" rows="5" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1" placeholder="Paste what your AI should know: products, prices, hours, policies, FAQs…"></textarea></label>
+          <label class="block text-sm">Custom system prompt (optional)<textarea name="ai_system_prompt" rows="2" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></textarea></label>
           <div class="flex gap-3 flex-wrap">
-            <label class="block text-sm flex-1">Gemini key <span id="k-gem" class="text-green-600 text-xs"></span><input name="gemini_api_key" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
-            <label class="block text-sm flex-1">Groq key <span id="k-groq" class="text-green-600 text-xs"></span><input name="groq_api_key" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
+            <label class="block text-sm flex-1">Gemini key <span id="k-gem" class="text-green-600 text-xs"></span><input name="gemini_api_key" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
+            <label class="block text-sm flex-1">Groq key <span id="k-groq" class="text-green-600 text-xs"></span><input name="groq_api_key" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
           </div>
-          <label class="block text-sm">Anthropic (Claude) key <span id="k-claude" class="text-green-600 text-xs"></span><input name="anthropic_api_key" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
+          <label class="block text-sm">Anthropic (Claude) key <span id="k-claude" class="text-green-600 text-xs"></span><input name="anthropic_api_key" type="password" placeholder="leave blank to keep" class="w-full border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
         </div>
-        <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-3">
+        <div class="card p-6 space-y-3">
           <h2 class="font-bold">Cost estimate</h2>
-          <label class="block text-sm">Per-message rate (₹)<input name="wa_msg_rate" class="w-40 border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1"></label>
+          <label class="block text-sm">Per-message rate (₹)<input name="wa_msg_rate" class="w-40 border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1"></label>
         </div>
-        <button class="text-white font-bold px-6 py-2.5 rounded-lg" style="background:var(--brand)">Save settings</button>
+        <button class="btn-primary px-7 py-2.5">Save settings</button>
       </form>
 
-      <div class="bg-white border border-gray-200 rounded-xl p-5 space-y-3 mt-6">
+      <div class="card p-6 space-y-3 mt-5">
         <h2 class="font-bold">Section passwords</h2>
         <p class="text-xs text-gray-400">Changing requires the current password.</p>
         <div class="flex gap-2 flex-wrap items-end">
-          <label class="text-sm">Section<select id="pw-section" class="border border-gray-300 rounded-lg px-3 py-2 text-sm mt-1 block"><option value="whatsapp">WhatsApp</option><option value="leads">Leads</option></select></label>
-          <input id="pw-current" type="password" placeholder="Current" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-          <input id="pw-next" type="password" placeholder="New (4+ chars)" class="border border-gray-300 rounded-lg px-3 py-2 text-sm">
-          <button id="pw-save" class="border border-gray-300 px-4 py-2 rounded-lg text-sm hover:bg-gray-50">Change</button>
+          <label class="text-sm">Section<select id="pw-section" class="border border-gray-300 rounded-xl px-3 py-2 text-sm mt-1 block"><option value="whatsapp">WhatsApp</option><option value="leads">Leads</option></select></label>
+          <input id="pw-current" type="password" placeholder="Current" class="border border-gray-300 rounded-xl px-3 py-2 text-sm">
+          <input id="pw-next" type="password" placeholder="New (4+ chars)" class="border border-gray-300 rounded-xl px-3 py-2 text-sm">
+          <button id="pw-save" class="btn-ghost px-4 py-2 text-sm">Change</button>
         </div>
       </div>
     </section>
 
     <!-- HELP -->
-    <section data-pane="help" class="pane hidden p-6 max-w-3xl">
-      <h1 class="text-2xl font-extrabold mb-1">❓ Help &amp; First-Time Setup</h1>
+    <section data-pane="help" class="pane hidden p-7 max-w-3xl">
+      <p class="eyebrow mb-0.5">Guide</p>
+      <h1 class="text-2xl font-extrabold tracking-tight mb-1">Help &amp; First-Time Setup</h1>
       <p class="text-sm text-gray-500 mb-6">Follow these steps in order. Most of it is one-time setup. You can copy the values straight into <b>Settings</b>.</p>
 
-      <div class="space-y-5 text-sm leading-relaxed">
+      <div class="space-y-4 text-sm leading-relaxed">
 
         <!-- 0 -->
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="card p-6">
           <h2 class="font-bold text-base mb-2">0 · Secure your account</h2>
           <ul class="list-disc pl-5 space-y-1 text-gray-700">
-            <li>Default login is <code class="bg-gray-100 px-1 rounded">admin</code> / <code class="bg-gray-100 px-1 rounded">admin123</code>. Set a strong password before going live — use the <code class="bg-gray-100 px-1 rounded">ADMIN_PASSWORD</code> env var on first run, or change it later via the change-password API.</li>
+            <li>Default login is <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">admin</code> / <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">admin123</code>. Set a strong password before going live — use the <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">ADMIN_PASSWORD</code> env var on first run, or change it later via the change-password API.</li>
             <li>This panel has one job: manage WhatsApp chats, contacts, broadcasts and leads. Everything is stored on <b>your own server</b> — no third-party SaaS.</li>
           </ul>
         </div>
 
         <!-- 1 -->
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="card p-6">
           <h2 class="font-bold text-base mb-2">1 · Create a Meta (Facebook) app</h2>
           <ol class="list-decimal pl-5 space-y-1 text-gray-700">
-            <li>Go to <a class="text-blue-600 underline" href="https://developers.facebook.com/apps" target="_blank" rel="noopener">developers.facebook.com/apps</a> and click <b>Create App</b>.</li>
+            <li>Go to <a class="text-emerald-600 font-medium underline" href="https://developers.facebook.com/apps" target="_blank" rel="noopener">developers.facebook.com/apps</a> and click <b>Create App</b>.</li>
             <li>Choose <b>Business</b> as the type. Give it any name.</li>
             <li>In the app dashboard, add the <b>WhatsApp</b> product (for chat) and keep <b>Facebook Login</b> available (for Lead Ads).</li>
             <li>Note your <b>App ID</b> and <b>App Secret</b> (under App Settings → Basic). You'll paste these in Settings.</li>
@@ -327,29 +432,29 @@
         </div>
 
         <!-- 2 -->
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="card p-6">
           <h2 class="font-bold text-base mb-2">2 · Connect WhatsApp (Cloud API)</h2>
           <ol class="list-decimal pl-5 space-y-1 text-gray-700">
             <li>In your Meta app → <b>WhatsApp → API Setup</b>.</li>
             <li>Copy the <b>Phone Number ID</b> (not the phone number itself) → paste in Settings.</li>
             <li>Generate a <b>permanent Access Token</b>: create a System User in Business Settings, give it the WhatsApp permissions, and generate a token that never expires. Paste it in Settings as the <b>Access Token</b>. <span class="text-amber-700">(The temporary 24-hour token also works for testing.)</span></li>
-            <li>Pick any secret word as your <b>Verify Token</b> (e.g. <code class="bg-gray-100 px-1 rounded">myverify123</code>) and paste the same value in Settings.</li>
+            <li>Pick any secret word as your <b>Verify Token</b> (e.g. <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">myverify123</code>) and paste the same value in Settings.</li>
             <li>In <b>WhatsApp → Configuration → Webhook</b>, set:
               <ul class="list-disc pl-5 mt-1">
-                <li><b>Callback URL:</b> <code class="bg-gray-100 px-1 rounded break-all" id="help-webhook"></code></li>
+                <li><b>Callback URL:</b> <code class="bg-gray-100 px-1.5 py-0.5 rounded-md break-all" id="help-webhook"></code></li>
                 <li><b>Verify Token:</b> the same word from step 4</li>
               </ul>
-              Then click <b>Verify and Save</b>, and under webhook fields <b>Subscribe</b> to <code class="bg-gray-100 px-1 rounded">messages</code>.</li>
+              Then click <b>Verify and Save</b>, and under webhook fields <b>Subscribe</b> to <code class="bg-gray-100 px-1.5 py-0.5 rounded-md">messages</code>.</li>
             <li>Save Settings. The Dashboard should now show <b>● Connected</b>.</li>
           </ol>
-          <p class="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg p-2">The webhook needs a public HTTPS URL. On localhost, use a tunnel like <a class="underline" href="https://ngrok.com" target="_blank" rel="noopener">ngrok</a> and use that https address as the callback URL. On a live server, use your domain.</p>
+          <p class="mt-2 text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-xl p-2.5">The webhook needs a public HTTPS URL. On localhost, use a tunnel like <a class="underline" href="https://ngrok.com" target="_blank" rel="noopener">ngrok</a> and use that https address as the callback URL. On a live server, use your domain.</p>
         </div>
 
         <!-- 3 -->
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="card p-6">
           <h2 class="font-bold text-base mb-2">3 · Turn on the AI assistant (optional, free)</h2>
           <ol class="list-decimal pl-5 space-y-1 text-gray-700">
-            <li>Get a free API key from <a class="text-blue-600 underline" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio (Gemini)</a> or <a class="text-blue-600 underline" href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq</a>. Paste it in Settings → AI assistant.</li>
+            <li>Get a free API key from <a class="text-emerald-600 font-medium underline" href="https://aistudio.google.com/apikey" target="_blank" rel="noopener">Google AI Studio (Gemini)</a> or <a class="text-emerald-600 font-medium underline" href="https://console.groq.com/keys" target="_blank" rel="noopener">Groq</a>. Paste it in Settings → AI assistant.</li>
             <li>In the <b>Business info / FAQ</b> box, paste everything the AI should know: what you sell, prices, timings, policies, common questions. The AI answers <b>only</b> from this.</li>
             <li>Keep <b>AI enabled</b> and <b>AI auto-reply ON</b> checked. Now every WhatsApp message gets an instant reply, even at night.</li>
             <li>In any chat, tick <b>AI paused</b> to take over manually for that one person.</li>
@@ -358,23 +463,23 @@
         </div>
 
         <!-- 4 -->
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="card p-6">
           <h2 class="font-bold text-base mb-2">4 · Connect Meta Lead Ads (auto-import leads)</h2>
           <ol class="list-decimal pl-5 space-y-1 text-gray-700">
             <li>Make sure <b>App ID</b> and <b>App Secret</b> are saved in Settings (from step 1).</li>
-            <li>In your Meta app → Facebook Login → Settings, add this as a <b>Valid OAuth Redirect URI</b>: <code class="bg-gray-100 px-1 rounded break-all" id="help-fb-redirect"></code></li>
+            <li>In your Meta app → Facebook Login → Settings, add this as a <b>Valid OAuth Redirect URI</b>: <code class="bg-gray-100 px-1.5 py-0.5 rounded-md break-all" id="help-fb-redirect"></code></li>
             <li>Go to <b>WhatsApp → Contacts</b> tab here and click <b>Connect Facebook</b>. Approve your Pages.</li>
             <li>Done. New lead-form submissions auto-import as contacts (tagged by campaign), and the app also re-checks every 5 minutes.</li>
-            <li>To pull <b>old</b> leads once, open <code class="bg-gray-100 px-1 rounded break-all" id="help-import"></code> in the browser while logged in.</li>
+            <li>To pull <b>old</b> leads once, open <code class="bg-gray-100 px-1.5 py-0.5 rounded-md break-all" id="help-import"></code> in the browser while logged in.</li>
           </ol>
         </div>
 
         <!-- 5 -->
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="card p-6">
           <h2 class="font-bold text-base mb-2">5 · Sending messages</h2>
           <ul class="list-disc pl-5 space-y-1 text-gray-700">
             <li><b>Replies in a chat</b> are free within 24 hours of the customer's last message. The green/amber banner shows the window.</li>
-            <li><b>Broadcasts &amp; sequences</b> need an <b>approved template</b>. Create templates in <a class="text-blue-600 underline" href="https://business.facebook.com/wa/manage/message-templates/" target="_blank" rel="noopener">Meta Business Manager</a> → they appear in the <b>Templates</b> tab once approved.</li>
+            <li><b>Broadcasts &amp; sequences</b> need an <b>approved template</b>. Create templates in <a class="text-emerald-600 font-medium underline" href="https://business.facebook.com/wa/manage/message-templates/" target="_blank" rel="noopener">Meta Business Manager</a> → they appear in the <b>Templates</b> tab once approved.</li>
             <li><b>Broadcast:</b> pick an audience (paste numbers / all / by tag), enter the template name, send. Optional schedule for later.</li>
             <li><b>Sequences:</b> set up a drip of template messages auto-sent over days; auto-enroll anyone with a chosen tag.</li>
             <li>Marketing template messages are billed by Meta on your own account (~₹0.8 each in India). Set your rate in Settings to track spend.</li>
@@ -382,17 +487,17 @@
         </div>
 
         <!-- 6 -->
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="card p-6">
           <h2 class="font-bold text-base mb-2">6 · Capturing website leads (optional)</h2>
           <p class="text-gray-700 mb-2">Point any website contact form at this endpoint to collect leads here too:</p>
-          <pre class="bg-gray-900 text-gray-100 rounded-lg p-3 text-xs overflow-x-auto">POST <span id="help-leads-ep"></span>
+          <pre class="bg-gray-900 text-gray-100 rounded-xl p-4 text-xs overflow-x-auto">POST <span id="help-leads-ep"></span>
 Content-Type: application/json
 
 { "source": "website", "name": "...", "phone": "...", "email": "...", "message": "..." }</pre>
         </div>
 
         <!-- 7 -->
-        <div class="bg-white border border-gray-200 rounded-xl p-5">
+        <div class="card p-6">
           <h2 class="font-bold text-base mb-2">7 · Daily use</h2>
           <ul class="list-disc pl-5 space-y-1 text-gray-700">
             <li><b>WhatsApp → Chats:</b> live inbox. A sound + badge alerts you to new messages from any tab.</li>
