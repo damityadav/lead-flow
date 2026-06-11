@@ -345,7 +345,13 @@
         </div>
         <div class="card p-6 space-y-3">
           <h2 class="font-bold">WhatsApp Cloud API</h2>
-          <div class="rounded-2xl p-5" style="background:radial-gradient(120% 120% at 0% 0%,#13301f 0%,#0c1f15 60%)">
+          <!-- Provider mode: central Meta app baked into .env — client sees one button only -->
+          <div id="wiz-simple" class="hidden rounded-2xl p-6 text-center" style="background:radial-gradient(120% 120% at 0% 0%,#13301f 0%,#0c1f15 60%)">
+            <p class="text-base font-bold text-white mb-1">⚡ Connect your WhatsApp</p>
+            <p class="text-xs mb-4 leading-relaxed max-w-md mx-auto" style="color:#9fb3a8">One click — log in with the Facebook account that owns your business, approve, and you're live. Token, number, webhook, lead-ads pages: everything is set up for you automatically.</p>
+            <a href="/api/admin/wa/connect" class="btn-primary inline-block px-7 py-2.5 text-sm">Connect with Facebook →</a>
+          </div>
+          <div id="wiz-full" class="rounded-2xl p-5" style="background:radial-gradient(120% 120% at 0% 0%,#13301f 0%,#0c1f15 60%)">
             <p class="text-sm font-bold text-white mb-1">⚡ Guided setup — ~2 minutes, then everything is automatic</p>
             <p class="text-xs mb-4 leading-relaxed" style="color:#9fb3a8">Meta never shares an app's Secret over any API (security), so one copy-paste is unavoidable. Each step opens the exact page.</p>
             <div class="space-y-4 text-xs" style="color:#c9d6cd">

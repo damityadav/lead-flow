@@ -1,6 +1,7 @@
 // LeadFlow — self-hosted WhatsApp + Meta Lead Ads CRM
 // Express + node:sqlite + session auth. Run with: npm start
 'use strict';
+try { process.loadEnvFile(); } catch (_) { /* no .env — env vars only */ }
 const express = require('express');
 const crypto = require('crypto');
 const session = require('express-session');
@@ -957,6 +958,9 @@ app.get('/api/settings', requireAdmin, (req, res) => {
   const rows = db.prepare('SELECT key, value FROM site_settings').all();
   const settings = {};
   for (const r of rows) { if (SECRET_SETTING_KEYS.has(r.key)) settings[r.key + '_set'] = !!(r.value && String(r.value).trim()); else settings[r.key] = r.value; }
+  // Provider mode: install ships with a central Meta app in .env, so the UI
+  // can hide the whole app-creation wizard and show a single Connect button.
+  settings.provider_app = fbLeads.isProviderApp();
   res.json(settings);
 });
 app.put('/api/settings', requireAdmin, (req, res) => {

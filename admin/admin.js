@@ -265,6 +265,9 @@ async function loadSettings(){
       else if(el.type==='password'){ el.value=''; }
       else if(s[el.name]!=null){ el.value=s[el.name]; } }
     $('#wa-tok-set').textContent=s.whatsapp_token_set?'✓ saved':'';
+    // Provider mode: central app baked into the install → hide the wizard, show one Connect button.
+    $('#wiz-simple').classList.toggle('hidden', !s.provider_app);
+    $('#wiz-full').classList.toggle('hidden', !!s.provider_app);
     $('#wiz-app-id').value=s.whatsapp_app_id||''; $('#wiz-config-id').value=s.fb_config_id||''; wizUpdateLinks();
     if(!$('#wiz-saved').textContent) $('#wiz-saved').textContent=(s.whatsapp_app_id&&s.whatsapp_app_secret_set)?'✓ App ID & Secret saved — do step 3, then Connect.':'';
     $('#k-gem').textContent=s.gemini_api_key_set?'✓ saved':''; $('#k-groq').textContent=s.groq_api_key_set?'✓ saved':''; $('#k-claude').textContent=s.anthropic_api_key_set?'✓ saved':'';
